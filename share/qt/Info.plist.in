@@ -29,16 +29,16 @@
   <string>????</string>
 
   <key>CFBundleExecutable</key>
-  <string>Dogecoin-Qt</string>
+  <string>BrrrFren-Qt</string>
 
   <key>CFBundleName</key>
-  <string>Dogecoin-Qt</string>
+  <string>BrrrFren-Qt</string>
 
   <key>LSHasLocalizedDisplayName</key>
   <true/>
 
   <key>CFBundleIdentifier</key>
-  <string>com.dogecoin.Dogecoin-Qt</string>
+  <string>com.dogecoin.BrrrFren-Qt</string>
 
   <key>CFBundleURLTypes</key>
   <array>
@@ -46,7 +46,7 @@
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>com.dogecoin.DogecoinPayment</string>
+      <string>com.dogecoin.BrrrFrenPayment</string>
       <key>CFBundleURLSchemes</key>
       <array>
         <string>dogecoin</string>
@@ -60,7 +60,7 @@
       <key>UTTypeIdentifier</key>
       <string>com.dogecoin.paymentrequest</string>
       <key>UTTypeDescription</key>
-      <string>Dogecoin payment request</string>
+      <string>BrrrFren payment request</string>
       <key>UTTypeConformsTo</key>
       <array>
         <string>public.data</string>

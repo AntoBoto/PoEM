@@ -24,23 +24,23 @@ BITCOIN_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BDB_CPPFLAGS) $(BOOST_CPPFLAG
 BITCOIN_INCLUDES += -I$(srcdir)/secp256k1/include
 BITCOIN_INCLUDES += $(UNIVALUE_CFLAGS)
 
-LIBDOGECOIN_SERVER=libdogecoin_server.a
-LIBDOGECOIN_COMMON=libdogecoin_common.a
-LIBDOGECOIN_CONSENSUS=libdogecoin_consensus.a
-LIBDOGECOIN_CLI=libdogecoin_cli.a
-LIBDOGECOIN_UTIL=libdogecoin_util.a
-LIBDOGECOIN_CRYPTO=crypto/libdogecoin_crypto.a
-LIBDOGECOINQT=qt/libdogecoinqt.a
+LIBBRRRCOIN_SERVER=libdogecoin_server.a
+LIBBRRRCOIN_COMMON=libdogecoin_common.a
+LIBBRRRCOIN_CONSENSUS=libdogecoin_consensus.a
+LIBBRRRCOIN_CLI=libdogecoin_cli.a
+LIBBRRRCOIN_UTIL=libdogecoin_util.a
+LIBBRRRCOIN_CRYPTO=crypto/libdogecoin_crypto.a
+LIBBRRRCOINQT=qt/libdogecoinqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
 
 if ENABLE_ZMQ
-LIBDOGECOIN_ZMQ=libdogecoin_zmq.a
+LIBBRRRCOIN_ZMQ=libdogecoin_zmq.a
 endif
 if BUILD_BITCOIN_LIBS
-LIBDOGECOINCONSENSUS=libdogecoinconsensus.la
+LIBBRRRCOINCONSENSUS=libdogecoinconsensus.la
 endif
 if ENABLE_WALLET
-LIBDOGECOIN_WALLET=libdogecoin_wallet.a
+LIBBRRRCOIN_WALLET=libdogecoin_wallet.a
 endif
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
@@ -49,16 +49,16 @@ $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
 EXTRA_LIBRARIES += \
-  $(LIBDOGECOIN_CRYPTO) \
-  $(LIBDOGECOIN_UTIL) \
-  $(LIBDOGECOIN_COMMON) \
-  $(LIBDOGECOIN_CONSENSUS) \
-  $(LIBDOGECOIN_SERVER) \
-  $(LIBDOGECOIN_CLI) \
-  $(LIBDOGECOIN_WALLET) \
-  $(LIBDOGECOIN_ZMQ)
+  $(LIBBRRRCOIN_CRYPTO) \
+  $(LIBBRRRCOIN_UTIL) \
+  $(LIBBRRRCOIN_COMMON) \
+  $(LIBBRRRCOIN_CONSENSUS) \
+  $(LIBBRRRCOIN_SERVER) \
+  $(LIBBRRRCOIN_CLI) \
+  $(LIBBRRRCOIN_WALLET) \
+  $(LIBBRRRCOIN_ZMQ)
 
-lib_LTLIBRARIES = $(LIBDOGECOINCONSENSUS)
+lib_LTLIBRARIES = $(LIBBRRRCOINCONSENSUS)
 
 bin_PROGRAMS =
 noinst_PROGRAMS =
@@ -292,6 +292,7 @@ libdogecoin_consensus_a_SOURCES = \
   arith_uint256.h \
   consensus/merkle.cpp \
   consensus/merkle.h \
+  consensus/params.cpp \
   consensus/params.h \
   consensus/validation.h \
   hash.cpp \
@@ -329,6 +330,7 @@ libdogecoin_common_a_SOURCES = \
   auxpow.cpp \
   base58.cpp \
   chainparams.cpp \
+  consensus/params.cpp \
   coins.cpp \
   compressor.cpp \
   core_read.cpp \
@@ -399,14 +401,14 @@ dogecoind_SOURCES += bitcoind-res.rc
 endif
 
 dogecoind_LDADD = \
-  $(LIBDOGECOIN_SERVER) \
-  $(LIBDOGECOIN_COMMON) \
+  $(LIBBRRRCOIN_SERVER) \
+  $(LIBBRRRCOIN_COMMON) \
   $(LIBUNIVALUE) \
-  $(LIBDOGECOIN_UTIL) \
-  $(LIBDOGECOIN_WALLET) \
-  $(LIBDOGECOIN_ZMQ) \
-  $(LIBDOGECOIN_CONSENSUS) \
-  $(LIBDOGECOIN_CRYPTO) \
+  $(LIBBRRRCOIN_UTIL) \
+  $(LIBBRRRCOIN_WALLET) \
+  $(LIBBRRRCOIN_ZMQ) \
+  $(LIBBRRRCOIN_CONSENSUS) \
+  $(LIBBRRRCOIN_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
   $(LIBSECP256K1)
@@ -424,10 +426,10 @@ dogecoin_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
 dogecoin_cli_LDADD = \
-  $(LIBDOGECOIN_CLI) \
+  $(LIBBRRRCOIN_CLI) \
   $(LIBUNIVALUE) \
-  $(LIBDOGECOIN_UTIL) \
-  $(LIBDOGECOIN_CRYPTO)
+  $(LIBBRRRCOIN_UTIL) \
+  $(LIBBRRRCOIN_CRYPTO)
 
 dogecoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 #
@@ -444,10 +446,10 @@ endif
 
 dogecoin_tx_LDADD = \
   $(LIBUNIVALUE) \
-  $(LIBDOGECOIN_COMMON) \
-  $(LIBDOGECOIN_UTIL) \
-  $(LIBDOGECOIN_CONSENSUS) \
-  $(LIBDOGECOIN_CRYPTO) \
+  $(LIBBRRRCOIN_COMMON) \
+  $(LIBBRRRCOIN_UTIL) \
+  $(LIBBRRRCOIN_CONSENSUS) \
+  $(LIBBRRRCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
 dogecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
@@ -527,7 +529,7 @@ endif
 
 %.pb.cc %.pb.h: %.proto
 	@test -f $(PROTOC)
-	$(AM_V_GEN) $(PROTOC) --cpp_out=$(@D) --proto_path=$(<D) $<
+	$(AM_V_GEN) $(PROTOC) --cpp_out=$(@D) --proto_path=$(<D) $
 
 if EMBEDDED_LEVELDB
 include Makefile.leveldb.include

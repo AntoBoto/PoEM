@@ -16,7 +16,7 @@ from typing import List, Dict
 import lief #type:ignore
 
 # MAX_VERSIONS defines the maximum versions for dynamic symbols defined in linux
-# binaries for release. These are static for each major version of Dogecoin Core.
+# binaries for release. These are static for each major version of BrrrFren Core.
 #
 # Debian 6.0.9 (Squeeze) has:
 #

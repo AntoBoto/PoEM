@@ -1,7 +1,7 @@
 WINDOWS BUILD NOTES
 ====================
 
-Below are some notes on how to build Dogecoin Core for Windows.
+Below are some notes on how to build BrrrFren Core for Windows.
 
 Most developers use cross-compilation from Ubuntu to build executables for
 Windows. This is also used to build the release binaries.
@@ -64,8 +64,8 @@ build process.
 
 ## Get the Source Code
 
-To build Dogecoin from source code, you'll need the source code. Either check it out via `git` or download
-a zip file. (Look at the green "<> Code" button on [the Dogecoin GitHub repository](https://github.com/dogecoin/dogecoin/)).
+To build BrrrFren from source code, you'll need the source code. Either check it out via `git` or download
+a zip file. (Look at the green "<> Code" button on [the BrrrFren GitHub repository](https://github.com/dogecoin/dogecoin/)).
 
 Make sure this code is available in your Ubuntu directory. If you've unzipped a single downloaded file, you may need to change
 the permissions of all extracted files with command like:
@@ -94,7 +94,7 @@ For Ubuntu 20.04, set the default mingw32 g++ compiler option to posix:
 
 ...Choose the "posix" (vs 'auto' or 'win32') option, and continue.
 
-Note that for WSL v1 the Dogecoin Core source path MUST be somewhere in the default mount file system, for
+Note that for WSL v1 the BrrrFren Core source path MUST be somewhere in the default mount file system, for
 example /usr/src/dogecoin, AND not under, for example, /mnt/d/dogecoin.
 
 If this is not the case the dependency autoconf scripts will fail (silently.)
@@ -139,7 +139,7 @@ To build executables for Windows 32-bit, install the following dependencies:
 
     sudo apt-get install g++-mingw-w64-i686 mingw-w64-i686-dev
 
-Ensure that this toolchain can build for `posix` (else you may have compilation errors for Dogecoin's dependencies):
+Ensure that this toolchain can build for `posix` (else you may have compilation errors for BrrrFren's dependencies):
 
     sudo update-alternatives --config i686-w64-mingw32-g++
 

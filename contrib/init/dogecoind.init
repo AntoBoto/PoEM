@@ -19,14 +19,14 @@ fi
 RETVAL=0
 
 prog=dogecoind
-# you can override the lockfile via DOGECOIND_LOCKFILE in /etc/sysconfig/dogecoind
-lockfile=${DOGECOIND_LOCKFILE-/var/lock/subsys/dogecoind}
+# you can override the lockfile via BRRRCOIND_LOCKFILE in /etc/sysconfig/dogecoind
+lockfile=${BRRRCOIND_LOCKFILE-/var/lock/subsys/dogecoind}
 
-# dogecoind defaults to /usr/bin/dogecoind, override with DOGECOIND_BIN
-dogecoind=${DOGECOIND_BIN-/usr/bin/dogecoind}
+# dogecoind defaults to /usr/bin/dogecoind, override with BRRRCOIND_BIN
+dogecoind=${BRRRCOIND_BIN-/usr/bin/dogecoind}
 
-# dogecoind opts default to -disablewallet, override with DOGECOIND_OPTS
-dogecoind_opts=${DOGECOIND_OPTS--disablewallet}
+# dogecoind opts default to -disablewallet, override with BRRRCOIND_OPTS
+dogecoind_opts=${BRRRCOIND_OPTS--disablewallet}
 
 start() {
     echo -n $"Starting $prog: "

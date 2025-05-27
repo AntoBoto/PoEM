@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
-// Copyright (c) 2021-2022 The Dogecoin Core developers
+// Copyright (c) 2021-2022 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -32,6 +32,10 @@ struct BIP9Deployment {
     int64_t nStartTime;
     /** Timeout/expiry MedianTime for the deployment attempt. */
     int64_t nTimeout;
+    
+    // Constants for always active features
+    static const int64_t ALWAYS_ACTIVE = 0;
+    static const int64_t NO_TIMEOUT = 0x7FFFFFFFFFFFFFFF;  // int64_t max
 };
 
 /**
@@ -68,10 +72,12 @@ struct Params {
     int64_t nPowTargetTimespan;
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
 
-    /** Dogecoin-specific parameters */
+    /** BrrrFren-specific parameters */
     bool fDigishieldDifficultyCalculation;
     bool fPowAllowDigishieldMinDifficultyBlocks; // Allow minimum difficulty blocks where a retarget would normally occur
     bool fSimplifiedRewards; // Use block height derived rewards rather than previous block hash derived
+    int nDripEndHeight;      // Height at which block subsidy drip ends
+    int nAuxpowStartHeight;  // Height at which AuxPoW is allowed
 
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;

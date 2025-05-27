@@ -1,4 +1,4 @@
-# Building Dogecoin Core on MacOS #
+# Building BrrrFren Core on MacOS #
 
 Tested on MacOs Ventura and Sonoma on Intel (x86_64) and Apple Silicon (arm64) macs.
 
@@ -39,7 +39,7 @@ brew install autoconf automake libtool miniupnpc openssl pkg-config protobuf \
              qt5 zeromq qrencode librsvg boost berkeley-db@5 libevent
 ```
 
-### Go back to your Dogecoin repo ###
+### Go back to your BrrrFren repo ###
 
 ```sh
 cd ~/dogecoin

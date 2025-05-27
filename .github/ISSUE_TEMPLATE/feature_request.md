@@ -4,9 +4,9 @@ about: Suggest an idea for this project
 title: '[feat] '
 ---
 
-<!-- Please make sure you are posting an technical issue related to Dogecoin Core. --> 
+<!-- Please make sure you are posting an technical issue related to BrrrFren Core. --> 
 
-<!-- For general questions about Dogecoin or wallet recovery please use one of the various communities:
+<!-- For general questions about BrrrFren or wallet recovery please use one of the various communities:
 * [Dogeducation on reddit](https://www.reddit.com/r/dogeducation/)
 * [Discord](https://discord.com/invite/dogecoin) -->
 

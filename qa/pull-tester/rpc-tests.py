@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2016 The Bitcoin Core developers
-# Copyright (c) 2022-2024 The Dogecoin Core developers
+# Copyright (c) 2022-2024 The BrrrFren Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -44,8 +44,8 @@ RPC_TESTS_DIR = SRCDIR + '/qa/rpc-tests/'
 #If imported values are not defined then set to zero (or disabled)
 if 'ENABLE_WALLET' not in vars():
     ENABLE_WALLET=0
-if 'ENABLE_DOGECOIND' not in vars():
-    ENABLE_DOGECOIND=0
+if 'ENABLE_BRRRCOIND' not in vars():
+    ENABLE_BRRRCOIND=0
 if 'ENABLE_UTILS' not in vars():
     ENABLE_UTILS=0
 if 'ENABLE_ZMQ' not in vars():
@@ -76,8 +76,8 @@ for arg in sys.argv[1:]:
         opts.add(arg)
 
 #Set env vars
-if "DOGECOIND" not in os.environ:
-    os.environ["DOGECOIND"] = BUILDDIR + '/src/dogecoind' + EXEEXT
+if "BRRRCOIND" not in os.environ:
+    os.environ["BRRRCOIND"] = BUILDDIR + '/src/dogecoind' + EXEEXT
 
 if EXEEXT == ".exe" and "-win" not in opts:
     # https://github.com/bitcoin/bitcoin/commit/d52802551752140cf41f0d9a225a43e84404d3e9
@@ -85,7 +85,7 @@ if EXEEXT == ".exe" and "-win" not in opts:
     print("Win tests currently disabled by default.  Use -win option to enable")
     sys.exit(0)
 
-if not (ENABLE_WALLET == 1 and ENABLE_UTILS == 1 and ENABLE_DOGECOIND == 1):
+if not (ENABLE_WALLET == 1 and ENABLE_UTILS == 1 and ENABLE_BRRRCOIND == 1):
     print("No rpc tests to run. Wallet, utils, and dogecoind must all be enabled")
     sys.exit(0)
 

@@ -205,7 +205,7 @@ jobs:
     runs-on: ubuntu-24.04
     container:
       image: ${{ matrix.container }}
-      options: ${{ matrix.container-options == '' && '-e 1DOGE=1DOGE' || matrix.container-options }}
+      options: ${{ matrix.container-options == '' && '-e 1BRRR=1BRRR' || matrix.container-options }}
 
     steps:
       - name: Configure container
@@ -277,7 +277,7 @@ jobs:
           path: ~/.ccache
           key: ${{ matrix.name }}-${{ env.cache-name }}-${{ hashFiles('**/configure.ac', '.github/workflows/ci.yml') }}
 
-      - name: Build Dogecoin
+      - name: Build BrrrFren
         run: |
           depends/${{ matrix.host }}/native/bin/ccache --max-size=$CCACHE_SIZE
           ./autogen.sh
@@ -312,5 +312,5 @@ jobs:
           name: dogecoin-${{ github.sha }}-${{ matrix.name }}
           path: |
             depends/${{ matrix.host }}/bin/dogecoin*
-            dist/Dogecoin-Qt.app
+            dist/BrrrFren-Qt.app
             ${{ matrix.name }}-bench.csv

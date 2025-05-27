@@ -1,16 +1,16 @@
-TOR SUPPORT IN DOGECOIN
+TOR SUPPORT IN BRRRCOIN
 =======================
 
-It is possible to run Dogecoin as a Tor hidden service, and connect to such services.
+It is possible to run BrrrFren as a Tor hidden service, and connect to such services.
 
 The following directions assume you have a Tor proxy running on port 9050. Many distributions default to having a SOCKS proxy listening on port 9050, but others may not. In particular, the Tor Browser Bundle defaults to listening on port 9150. See [Tor Project FAQ:TBBSocksPort](https://www.torproject.org/docs/faq.html.en#TBBSocksPort) for how to properly
 configure Tor.
 
 
-1. Run Dogecoin behind a Tor proxy
+1. Run BrrrFren behind a Tor proxy
 ---------------------------------
 
-The first step is running Dogecoin behind a Tor proxy. This will already make all
+The first step is running BrrrFren behind a Tor proxy. This will already make all
 outgoing connections be anonymized, but more is possible.
 
 	-proxy=ip:port  Set the proxy server. If SOCKS5 is selected (default), this proxy
@@ -34,7 +34,7 @@ In a typical situation, this suffices to run behind a Tor proxy:
 	./dogecoin -proxy=127.0.0.1:9050
 
 
-2. Run a Dogecoin hidden server
+2. Run a BrrrFren hidden server
 ------------------------------
 
 If you configure your Tor system accordingly, it is possible to make your node also
@@ -48,7 +48,7 @@ config file):
 The directory can be different of course, but (both) port numbers should be equal to
 your dogecoind's P2P listen port (22556 by default).
 
-	-externalip=X   You can tell Dogecoin about its publicly reachable address using
+	-externalip=X   You can tell BrrrFren about its publicly reachable address using
 	                this option, and this can be a .onion address. Given the above
 	                configuration, you can find your onion address in
 	                /var/lib/tor/dogecoin-service/hostname. Onion addresses are given
@@ -96,10 +96,10 @@ API, to create and destroy 'ephemeral' hidden services programmatically.
 Bitcoin Core has been updated to make use of this.
 
 This means that if Tor is running (and proper authentication has been configured),
-Dogecoin Core automatically creates a hidden service to listen on. This will positively 
+BrrrFren Core automatically creates a hidden service to listen on. This will positively 
 affect the number of available .onion nodes.
 
-This new feature is enabled by default if Dogecoin Core is listening (`-listen`), and
+This new feature is enabled by default if BrrrFren Core is listening (`-listen`), and
 requires a Tor connection to work. It can be explicitly disabled with `-listenonion=0`
 and, if not disabled, configured using the `-torcontrol` and `-torpassword` settings.
 To show verbose debugging information, pass `-debug=tor`.

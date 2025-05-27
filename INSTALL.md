@@ -1,8 +1,8 @@
-# Installing Dogecoin Core
+# Installing BrrrFren Core
 
 ### Pre-compiled binaries
 
-The easiest way to install the latest version of the Dogecoin Core software is
+The easiest way to install the latest version of the BrrrFren Core software is
 by to download the latest precompiled binaries for your platform from the
 [release page](https://github.com/dogecoin/dogecoin/releases). Currently,
 binaries are released for the following platforms:
@@ -28,7 +28,7 @@ binaries:
 | CentOS (x86)      | 7                    |
 | Fedora (x86)      | 28                   |
 
-It is possible to run Dogecoin Core on other systems and lower versions when
+It is possible to run BrrrFren Core on other systems and lower versions when
 compiling from source, see the chapters below for more information.
 
 #### Checking binary integrity
@@ -62,18 +62,18 @@ information regarding that process.
 
 ### Compiling using packaged dependencies
 
-It is possible to build your own copy of Dogecoin Core with the exact, tested,
+It is possible to build your own copy of BrrrFren Core with the exact, tested,
 dependencies, as used for the binary releases, by using the
 [depends system](depends/description.md). Please refer to the
-[depends README](depends/README.md) for instructions to build Dogecoin using
+[depends README](depends/README.md) for instructions to build BrrrFren using
 these dependencies.
 
 ### Compiling using system-provided libraries
 
-  The following are developer notes on how to build Dogecoin on your native
+  The following are developer notes on how to build BrrrFren on your native
   platform, using the dependencies as provided by your system's package manager.
   Before starting, ensure your system is updated and has the latest security patches.
-  Outdated libraries can render the entire system, including Dogecoin Core, vulnerable.
+  Outdated libraries can render the entire system, including BrrrFren Core, vulnerable.
   They are not complete guides, but include notes on the necessary libraries,
   compile flags, etc.
 
@@ -119,7 +119,7 @@ that run in `-regtest` mode.
 
 **DEBUG_LOCKORDER**
 
-Dogecoin Core is a multithreaded application, and deadlocks or other multithreading bugs
+BrrrFren Core is a multithreaded application, and deadlocks or other multithreading bugs
 can be very difficult to track down. Compiling with `-DDEBUG_LOCKORDER` (`configure
 CXXFLAGS="-DDEBUG_LOCKORDER -g"`) inserts run-time checks to keep track of which locks
 are held, and adds warnings to the debug.log file if inconsistencies are detected.

@@ -7,10 +7,10 @@ define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, false)
 define(_COPYRIGHT_YEAR, 2024)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
-define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Bitcoin Core and Dogecoin Core]])
+define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Bitcoin Core and BrrrFren Core]])
 define(_CURRENT_RELEASE_DATE,[[2024-08-03]])
 define(_EXPECTED_DAYS_TO_NEXT_RELEASE,[270])
-AC_INIT([Dogecoin Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/dogecoin/dogecoin/issues],[dogecoin],[https://dogecoin.com/])
+AC_INIT([BrrrFren Core], [1.0.0], [brrrfren@protonmail.com], [brrrfren])
 AC_CONFIG_SRCDIR([src/validation.cpp])
 AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -835,17 +835,17 @@ fi
 
 # Configure experimental for compile-time asserts
 if test x$allow_experimental = xyes; then
-  AC_DEFINE(ALLOW_DOGECOIN_EXPERIMENTAL, 1, [Define this symbol if experimental features are allowed])
+  AC_DEFINE(ALLOW_BRRRCOIN_EXPERIMENTAL, 1, [Define this symbol if experimental features are allowed])
 fi
 
 # Configure Scrypt SSE2
 if test x$use_scrypt_sse2 = xyes; then
-  DOGECOIN_REQUIRE_EXPERIMENTAL
+  BRRRCOIN_REQUIRE_EXPERIMENTAL
   AC_DEFINE(USE_SSE2, 1, [Define this symbol if SSE2 works])
 fi
 
 if test x$armv8_crypto = xyes; then
-  DOGECOIN_REQUIRE_EXPERIMENTAL
+  BRRRCOIN_REQUIRE_EXPERIMENTAL
   AC_MSG_CHECKING([whether to build with armv8 crypto])
   AC_MSG_RESULT(yes)
   AC_DEFINE(USE_ARMV8, 1, [Define this symbol if armv8 crypto works])
@@ -853,7 +853,7 @@ if test x$armv8_crypto = xyes; then
 fi
 
 if test x$armv82_crypto = xyes; then
-  DOGECOIN_REQUIRE_EXPERIMENTAL
+  BRRRCOIN_REQUIRE_EXPERIMENTAL
   AC_CHECK_DECLS([vsha512su0q_u64],
      [AC_DEFINE(USE_ARMV82, 1, [Define this symbol if armv8.2 crypto works])
      CXXFLAGS="$CXXFLAGS -march=armv8.2-a+crypto+sha3"], AC_MSG_ERROR(sha512 missing), [#include <arm_neon.h>])
@@ -932,7 +932,7 @@ else
 fi
 
 if test x$intel_avx2 = xyes; then
-  DOGECOIN_REQUIRE_EXPERIMENTAL
+  BRRRCOIN_REQUIRE_EXPERIMENTAL
   case $host in
      x86_64-*-linux*)
     AC_CHECK_LIB([IPSec_MB],[sha1_one_block_avx2],LIBS=-lIPSec_MB, AC_MSG_ERROR(IPSec_MB missing))

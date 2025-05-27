@@ -1,4 +1,4 @@
-# Unix Build of Dogecoin Core
+# Unix Build of BrrrFren Core
 
 This installation guide serves as a basis for all UNIX and UNIX-like operating
 systems. All examples in this guide are illustrated using an Ubuntu/Debian OS,
@@ -26,7 +26,7 @@ below.
 
 ## Install dependencies
 
-You must install required dependencies to build a basic Dogecoin daemon, optional dependencies may vary according to your requirements.
+You must install required dependencies to build a basic BrrrFren daemon, optional dependencies may vary according to your requirements.
 
 Wallet is optional to run a node, see [Wallet](#wallet) section to enable them.
 
@@ -54,7 +54,7 @@ For the versions used in the release, see [release-process.md](release-process.m
 
 ### Using packaged dependencies
 
-Dogecoin Core's released binaries are built using the "depends system", which
+BrrrFren Core's released binaries are built using the "depends system", which
 contains exact, tested versions of all dependencies. To create binaries that are
 using only fully tested dependencies, see the documentation in the
 [depends directory](../depends/README.md) and the
@@ -115,7 +115,7 @@ Create `dogecoin-qt`, the core wallet GUI.
 #### Wallet
 BerkeleyDB is required for wallet functionality and use of the `wallet.dat` file.
 
-By default, **Dogecoin Core expects BerkeleyDB 5.3**.
+By default, **BrrrFren Core expects BerkeleyDB 5.3**.
 You can use a different version by specifying `--with-incompatible-bdb` flag.
 
 If you have to build it yourself, you can
@@ -128,12 +128,12 @@ like so:
 
 from the root of the repository.
 
-Otherwise, you can build Dogecoin Core from self-compiled [depends](/depends/README.md).
+Otherwise, you can build BrrrFren Core from self-compiled [depends](/depends/README.md).
 
 **Note**: You only need Berkeley DB if the wallet is enabled (see [*Disable-wallet mode*](#disable-wallet-mode)).
 
 #### Disable-wallet mode
-When the intention is to run only a P2P node without a wallet, Dogecoin may be compiled in
+When the intention is to run only a P2P node without a wallet, BrrrFren may be compiled in
 disable-wallet mode with:
 
 ```bash
@@ -156,7 +156,7 @@ turned off by default.  See the configure options for upnp behavior desired:
 ```
 
 #### Security
-To help make your Dogecoin installation more secure by making certain attacks impossible to
+To help make your BrrrFren installation more secure by making certain attacks impossible to
 exploit even if a vulnerability is found, binaries are hardened by default.
 This can be disabled with:
 
@@ -188,7 +188,7 @@ Hardening enables the following features:
 
 * Non-executable Stack
     If the stack is executable, trivial stack-based buffer overflow exploits are possible if
-    vulnerable buffers are found. By default, Dogecoin should be built with a non-executable stack,
+    vulnerable buffers are found. By default, BrrrFren should be built with a non-executable stack,
     but if one of the libraries it uses asks for an executable stack or someone makes a mistake
     and uses a compiler extension which requires an executable stack, it will silently build an
     executable without the non-executable stack protection.
@@ -205,7 +205,7 @@ Hardening enables the following features:
 #### Memory Requirements
 
 C++ compilers are memory-hungry. It is recommended to have at
-least 1.5 GB of memory available when compiling Dogecoin Core.
+least 1.5 GB of memory available when compiling BrrrFren Core.
 On systems with less, gcc can be tuned to conserve memory with additional CXXFLAGS:
 
 ```bash

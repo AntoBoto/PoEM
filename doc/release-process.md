@@ -36,7 +36,7 @@ Check out the source code in the following directory hierarchy.
     git clone https://github.com/devrandom/gitian-builder.git
     git clone https://github.com/dogecoin/dogecoin.git
 
-### Dogecoin maintainers/release engineers, update version in sources
+### BrrrFren maintainers/release engineers, update version in sources
 
 Update the following:
 
@@ -124,7 +124,7 @@ NOTE: Offline builds must use the --url flag to ensure Gitian fetches only from 
 
 The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
-### Build and sign Dogecoin Core for Linux, Windows, and OS X:
+### Build and sign BrrrFren Core for Linux, Windows, and OS X:
 
     pushd ./gitian-builder
     ./bin/gbuild --memory 3000 --commit dogecoin=v${VERSION} ../dogecoin/contrib/gitian-descriptors/gitian-linux.yml
@@ -254,9 +254,9 @@ Note: check that SHA256SUMS itself doesn't end up in SHA256SUMS, which is a spur
 
 - Announce the release:
 
-  - Release sticky on Dogecoin Forums: http://forum.dogecoin.com/forum/news-community/community-announcements
+  - Release sticky on BrrrFren Forums: http://forum.dogecoin.com/forum/news-community/community-announcements
 
-  - Dogecoin-development mailing list
+  - BrrrFren-development mailing list
 
   - Twitter, reddit /r/dogecoin
 

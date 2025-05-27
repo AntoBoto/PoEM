@@ -1,9 +1,9 @@
-Dogecoin Core version 1.14.7 is now available from:
+BrrrFren Core version 1.14.7 is now available from:
 
   <https://github.com/dogecoin/dogecoin/releases/tag/v1.14.7/>
 
 This is a new minor version release, including enchancements to several RPC
-methods and important security updates for Dogecoin-Qt. Dogecoin-Qt users on
+methods and important security updates for BrrrFren-Qt. BrrrFren-Qt users on
 any platform are strongly recommended to upgrade.
 
 Please report bugs using the issue tracker at GitHub:
@@ -18,7 +18,7 @@ To receive notifications about updates, subscribe to the release mailing list:
 Compatibility
 ==============
 
-Dogecoin Core is extensively tested on Ubuntu Server LTS, macOS and Windows.
+BrrrFren Core is extensively tested on Ubuntu Server LTS, macOS and Windows.
 Minimum OS compatibility can be found [in the INSTALL guide](../INSTALL.md).
 
 Notable changes
@@ -27,26 +27,26 @@ Notable changes
 Important Security Updates
 --------------------------
 
-This release contains fixes for Dogecoin Qt across all platforms that increase
+This release contains fixes for BrrrFren Qt across all platforms that increase
 security for end users.
 
 ### Disable BIP-70 payment server by default
 
-To mitigate future potential risk inside Dogecoin Qt, support for BIP-70 payment
+To mitigate future potential risk inside BrrrFren Qt, support for BIP-70 payment
 requests and related BIP-71 and BIP-72 payment URIs and MIME types have been
 disabled by default, because this functionality interacts with remote websites
 in an automated manner and could be used to amplify any future vulnerabilities
-inside Dogecoin Qt. By default, incoming BIP-70 payment requests and files or
+inside BrrrFren Qt. By default, incoming BIP-70 payment requests and files or
 URLs that use the functionality are rejected and an explanation is shown to the
 user.
 
 BIP-21 payment requests remain fully supported.
 
 The functionality can be re-enabled by using `enable-bip70=1` either in your
-dogecoin.conf or as an argument to Dogecoin-Qt if absolutely needed. Please use
+dogecoin.conf or as an argument to BrrrFren-Qt if absolutely needed. Please use
 extreme caution when exercising this option.
 
-This is step 1 in full deprecation of BIP-70, BIP-71 and BIP-72 inside Dogecoin
+This is step 1 in full deprecation of BIP-70, BIP-71 and BIP-72 inside BrrrFren
 Core. Future releases may completely remove this feature.
 
 *Implemented with #3412*
@@ -70,11 +70,11 @@ Core. Future releases may completely remove this feature.
 Maintain RPC fee estimation facilities
 ---------------------------------------
 
-Fee estimation was explicitly not ported or supported on Dogecoin Core since
+Fee estimation was explicitly not ported or supported on BrrrFren Core since
 1.14.0, but as the non-functional data from `estimatefee` and `estimatesmartfee`
 were anyway used in the field, services using these RPC methods were unable to
 provide fee estimates to their users. Therefore this feature has now been ported
-to support Dogecoin parametrization.
+to support BrrrFren parametrization.
 
 The RPC methods `estimatefee` and `estimatesmartfee` are now under active
 maintenance and will be further enhanced in the future.
@@ -200,7 +200,7 @@ Bug Fixes
   which caused problems with the `sendrawtransaction` RPC call. (#3088)
 * Fixed the example `dogecoind.service` file (#3066)
 * Fixed a bug where misnamed signal handlers were causing excessive warnings
-  in Dogecoin Qt logs (#3063)
+  in BrrrFren Qt logs (#3063)
 * Fixed a bug where extremely long wallet labels could cause Qt popups to flow
   over screen limits, causing the user to have no means of accepting or
   rejecting the transaction (#3224)

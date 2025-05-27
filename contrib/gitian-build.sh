@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Copyright (c) 2016 The Bitcoin Core developers
-# Copyright (c) 2021 The Dogecoin Core developers
+# Copyright (c) 2021 The BrrrFren Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -46,7 +46,7 @@ outputDir=$(pwd)/gitian-output
 read -r -d '' usage <<-EOF
 Usage: $scriptName [options] version
 
-Standalone script to perform the gitian build of Dogecoin Core. Perform
+Standalone script to perform the gitian build of BrrrFren Core. Perform
 deterministic build for multiples Operating System, using Docker, LXC or
 KVM for virtualization. Sign binaries using PGP.
 
@@ -316,7 +316,7 @@ if [[ $build == true ]]; then
 
     # Clean dogecoin git directory because of old caching
     if [ -d inputs/dogecoin/ ]; then
-        echo "Cleaning Dogecoin directory..."
+        echo "Cleaning BrrrFren directory..."
         rm -rf inputs/dogecoin/
     fi
 

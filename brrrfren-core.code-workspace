@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../brrrfren-data"
+		},
+		{
+			"path": "../brrrfren-main"
+		}
+	],
+	"settings": {}
+}

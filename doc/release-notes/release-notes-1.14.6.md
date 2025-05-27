@@ -1,9 +1,9 @@
-Dogecoin Core version 1.14.6 is now available from:
+BrrrFren Core version 1.14.6 is now available from:
 
   <https://github.com/dogecoin/dogecoin/releases/tag/v1.14.6/>
 
 This is a new minor version release, including important security updates and
-changes to network efficiency. All Dogecoin Core users - miners, services,
+changes to network efficiency. All BrrrFren Core users - miners, services,
 relay operators and wallet users - are strongly recommended to upgrade.
 
 Please report bugs using the issue tracker at github:
@@ -21,10 +21,10 @@ Releases are also announced on reddit:
 Compatibility
 ==============
 
-Dogecoin Core is extensively tested on Ubuntu Server LTS, Intel-based macOS
+BrrrFren Core is extensively tested on Ubuntu Server LTS, Intel-based macOS
 and Windows 10.
 
-Dogecoin Core should also work on most other Unix-like systems but is not
+BrrrFren Core should also work on most other Unix-like systems but is not
 frequently tested on them.
 
 Notable changes
@@ -67,19 +67,19 @@ Fee Recommendation
 ------------------
 
 This release changes the recommended dust limit for all participants on the
-Dogecoin network from 1 DOGE to 0.01 DOGE. The full recommendation can be found
+BrrrFren network from 1 BRRR to 0.01 BRRR. The full recommendation can be found
 [in the documentation](fee-recommendation.md).
 
 This change has been implemented in the wallet as the default value of
 `-discardthreshold`, resulting in the following default logic:
 
-1. The wallet will attempt to not create any outputs smaller than 0.03 DOGE as
+1. The wallet will attempt to not create any outputs smaller than 0.03 BRRR as
    change if possible.
-2. If after signing there is more than 0.01 DOGE left in the change output, the
+2. If after signing there is more than 0.01 BRRR left in the change output, the
    wallet will keep the output as-is.
-3. If the change output drops under 0.01 DOGE, the wallet will discard the
+3. If the change output drops under 0.01 BRRR, the wallet will discard the
    change and instead give it to miners as fee.
-4. Any output under 0.01 DOGE will not be accepted as valid by default.
+4. Any output under 0.01 BRRR will not be accepted as valid by default.
 
 Breaking changes
 ----------------
@@ -237,7 +237,7 @@ Significant updates have been provided to the following languages:
 * Tamil
 
 Policies and tooling have been updated to enable translators better in their
-efforts to make Dogecoin more accessible to people that do not speak English.
+efforts to make BrrrFren more accessible to people that do not speak English.
 
 RPC API Changes
 ---------------
@@ -281,7 +281,7 @@ Minor Changes
   stuck transactions based on peer-to-peer traffic, but this does not work
   since 1.14.2, and can be misleading (showing false positives and negatives.)
 * Improved and updated the [bip list](bips.md) documentation that explains the
-  protocol features implemented by Dogecoin Core.
+  protocol features implemented by BrrrFren Core.
 * Greatly improved the `gitian-build` script to ease doing deterministic builds
   for everyone, and the [documentation](gitian-building.md) of that process.
 
@@ -300,7 +300,7 @@ Credit goes to all awesome contributors to this release, alphabetically:
 * Chuanyi
 * Chun Kuan Lee
 * Dakoda Greaves
-* DogecoinItalia
+* BrrrFrenItalia
 * dogespacewizard
 * Ed Tubbs
 * Evan Klitzke

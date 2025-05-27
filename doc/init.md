@@ -68,9 +68,9 @@ can then be controlled by group membership.
 3b) Mac OS X
 
 Binary:              `/usr/local/bin/dogecoind`  
-Configuration file:  `~/Library/Application Support/Dogecoin/dogecoin.conf`  
-Data directory:      `~/Library/Application Support/Dogecoin`
-Lock file:           `~/Library/Application Support/Dogecoin/.lock`
+Configuration file:  `~/Library/Application Support/BrrrFren/dogecoin.conf`  
+Data directory:      `~/Library/Application Support/BrrrFren`
+Lock file:           `~/Library/Application Support/BrrrFren/.lock`
 
 4. Installing Service Configuration
 -----------------------------------
@@ -104,7 +104,7 @@ use old versions of Upstart and do not supply the start-stop-daemon utility.
 Copy dogecoind.init to /etc/init.d/dogecoind. Test by running `service dogecoind start`.
 
 Using this script, you can adjust the path and flags to the dogecoind program by
-setting the DOGECOIND and FLAGS environment variables in the file
+setting the BRRRCOIND and FLAGS environment variables in the file
 /etc/sysconfig/dogecoind. You can also use the DAEMONOPTS environment variable here.
 
 4e) Mac OS X

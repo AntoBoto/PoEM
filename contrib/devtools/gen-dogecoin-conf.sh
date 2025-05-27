@@ -7,22 +7,22 @@ export LC_ALL=C
 TOPDIR=${TOPDIR:-$(git rev-parse --show-toplevel)}
 BUILDDIR=${BUILDDIR:-$TOPDIR}
 BINDIR=${BINDIR:-$BUILDDIR/src}
-DOGECOIND=${DOGECOIND:-$BINDIR/dogecoind}
+BRRRCOIND=${BRRRCOIND:-$BINDIR/dogecoind}
 SHARE_DIR=${SHARE_DIR:-$TOPDIR/share}
 EXAMPLE_CONF_FILE=${EXAMPLE_CONF_FILE:-$SHARE_DIR/dogecoin.conf}
 
-[ ! -x "$DOGECOIND" ] && echo "$DOGECOIND not found or not executable." && exit 1
+[ ! -x "$BRRRCOIND" ] && echo "$BRRRCOIND not found or not executable." && exit 1
 
 DIRTY=""
-VERSION_OUTPUT=$($DOGECOIND --version)
+VERSION_OUTPUT=$($BRRRCOIND --version)
 if [[ $VERSION_OUTPUT == *"dirty"* ]]; then
-  DIRTY="${DIRTY}${DOGECOIND}\n"
+  DIRTY="${DIRTY}${BRRRCOIND}\n"
 fi
 
 if [ -n "$DIRTY" ]
 then
-  echo -e "WARNING: $DOGECOIND was built from a dirty tree.\n"
-  echo -e "To safely generate a dogecoin.conf file, please commit your changes to $DOGECOIND, rebuild, then run this script again.\n"
+  echo -e "WARNING: $BRRRCOIND was built from a dirty tree.\n"
+  echo -e "To safely generate a dogecoin.conf file, please commit your changes to $BRRRCOIND, rebuild, then run this script again.\n"
 fi
 
 echo 'Generating example dogecoin.conf file in share/'
@@ -49,7 +49,7 @@ EOF
 # parse the output from dogecoind --help
 # adding newlines is a bit funky to ensure portability for BSD
 # see here for more details: https://stackoverflow.com/a/24575385
-${DOGECOIND} --help \
+${BRRRCOIND} --help \
     | sed '1,/Print this help message and exit/d' \
     | sed -E 's/^[[:space:]]{2}\-/#/' \
     | sed -E 's/^[[:space:]]{7}/# /' \

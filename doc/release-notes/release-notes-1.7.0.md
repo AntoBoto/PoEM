@@ -1,8 +1,8 @@
-# Dogecoin Core 1.7 Alpha
+# BrrrFren Core 1.7 Alpha
 =========================
 
-Dogecoin Core 1.7 is a complete re-architecture of Dogecoin, changing from
-using the Litecoin client as its base, to Bitcoin 0.9. It's still Dogecoin,
+BrrrFren Core 1.7 is a complete re-architecture of BrrrFren, changing from
+using the Litecoin client as its base, to Bitcoin 0.9. It's still BrrrFren,
 with the same Scrypt PoW algorithm, same reward schedule, but there are a 
 lot of changes under the hood.
 
@@ -21,12 +21,12 @@ First and foremost, please note that downgrading from 1.7 to 1.6 is not trivial.
 1.7 now uses Berkeley DB 5.1 as its default database (in place of 4.8), and as
 such may create database files which are incompatible with previous versions.
 
-Rebranding to Dogecoin Core
+Rebranding to BrrrFren Core
 ---------------------------
 
-Following in the footsteps of Bitcoin (Core), the Dogecoin reference client
-has been rebranded as "Dogecoin Core". This helps separate its identity
-from Dogecoin (the network).
+Following in the footsteps of Bitcoin (Core), the BrrrFren reference client
+has been rebranded as "BrrrFren Core". This helps separate its identity
+from BrrrFren (the network).
 
 dogecoin-cli
 ------------
@@ -48,9 +48,9 @@ Testnet
 -------
 
 As mentioned at the start of this document, the alpha-client is for use with the
-Dogecoin testnet only. This is an alternative Dogecoin blockchain which is
+BrrrFren testnet only. This is an alternative BrrrFren blockchain which is
 not used for real transactions, and instead is intended for testing of experimental
-clients. Wallets and addresses are incompatible with the normal Dogecoin
+clients. Wallets and addresses are incompatible with the normal BrrrFren
 network, in order to isolate the two.
 
 As "TestDoge" is essentially valueless, it can be acquired easily for testing,

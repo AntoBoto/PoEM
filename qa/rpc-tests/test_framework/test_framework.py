@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) 2014-2016 The Bitcoin Core developers
-# Copyright (c) 2023 The Dogecoin Core developers
+# Copyright (c) 2023 The BrrrFren Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -206,10 +206,10 @@ class ComparisonTestFramework(BitcoinTestFramework):
 
     def add_options(self, parser):
         parser.add_option("--testbinary", dest="testbinary",
-                          default=os.getenv("DOGECOIND", "dogecoind"),
+                          default=os.getenv("BRRRCOIND", "dogecoind"),
                           help="dogecoind binary to test")
         parser.add_option("--refbinary", dest="refbinary",
-                          default=os.getenv("DOGECOIND", "dogecoind"),
+                          default=os.getenv("BRRRCOIND", "dogecoind"),
                           help="dogecoind binary to use for reference nodes (if any)")
 
     def setup_network(self):

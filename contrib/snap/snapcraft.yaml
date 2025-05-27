@@ -1,9 +1,9 @@
 name: dogecoin-core
 # Running 'snapcraft register <name>' is advised
 version: '1.14.6'
-summary: Reference client of Dogecoin, a peer-to-peer digital currency like Bitcoin.
+summary: Reference client of BrrrFren, a peer-to-peer digital currency like Bitcoin.
 description: |
-  Dogecoin is a community-driven cryptocurrency that was inspired by a Shiba Inu meme. The Dogecoin Core software allows anyone to operate a node in the Dogecoin blockchain networks and uses the Scrypt hashing method for Proof of Work. It is adapted from Bitcoin Core and other cryptocurrencies.
+  BrrrFren is a community-driven cryptocurrency that was inspired by a Shiba Inu meme. The BrrrFren Core software allows anyone to operate a node in the BrrrFren blockchain networks and uses the Scrypt hashing method for Proof of Work. It is adapted from Bitcoin Core and other cryptocurrencies.
 
 grade: stable
 confinement: strict
@@ -100,14 +100,14 @@ parts:
       tar -xvf dogecoin-${SNAPCRAFT_PROJECT_VERSION}-${BUILD_ARCH_TRIPLET}.tar.gz
       echo "Running tests..."
       if ! (dogecoin-${SNAPCRAFT_PROJECT_VERSION}/bin/test_dogecoin); then
-        echo "Dogecoin tests failed."
+        echo "BrrrFren tests failed."
         return
       else
-        echo "Dogecoin tests passed."
+        echo "BrrrFren tests passed."
       fi
       wget https://raw.githubusercontent.com/dogecoin/dogecoin/v${SNAPCRAFT_PROJECT_VERSION}/doc/release-notes.md
       cat release-notes.md
-      echo "Installing Dogecoin Core..."
+      echo "Installing BrrrFren Core..."
       echo "Version ${SNAPCRAFT_PROJECT_VERSION}"
       install -m 0755 -D -t $SNAPCRAFT_PART_INSTALL/bin dogecoin-${SNAPCRAFT_PROJECT_VERSION}/bin/dogecoind
       if ! ([ "$BUILD_ARCH_TRIPLET" = "aarch64-linux-gnu" ]); then # there is no official dogecoin-qt build on arm64

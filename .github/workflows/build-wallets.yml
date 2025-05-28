@@ -38,7 +38,7 @@ jobs:
             build-essential libtool autotools-dev automake pkg-config \
             libevent-dev libssl-dev libboost-all-dev \
             qtbase5-dev qttools5-dev-tools protobuf-compiler \
-            libqrencode-dev libminiupnpc-dev
+            libqrencode-dev libminiupnpc-dev libdb++-dev
             
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
@@ -55,6 +55,7 @@ jobs:
             mingw-w64-x86_64-libevent
             mingw-w64-x86_64-qrencode
             mingw-w64-x86_64-miniupnpc
+            mingw-w64-x86_64-db
             
       # ---------- Build ----------
       - name: Build BrrrFren (Linux)

@@ -78,7 +78,12 @@ jobs:
       shell: msys2 {0}
       run: |
         ./autogen.sh
-        export BOOST_LIB_SUFFIX=-mt
+        export BOOST_SYSTEM_LIB="-lboost_system-mt"
+        export BOOST_FILESYSTEM_LIB="-lboost_filesystem-mt"
+        export BOOST_THREAD_LIB="-lboost_thread-mt"
+        export BOOST_CHRONO_LIB="-lboost_chrono-mt"
+        export BOOST_PROGRAM_OPTIONS_LIB="-lboost_program_options-mt"
+        export BOOST_UNIT_TEST_FRAMEWORK_LIB="-lboost_unit_test_framework-mt"
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no --with-boost-libdir=/mingw64/lib
         make -j$(nproc)
         strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe

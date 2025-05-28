@@ -63,7 +63,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         ./autogen.sh
-        ./configure --enable-static --disable-shared --with-pic
+        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb
         make -j$(nproc)
         strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
         mkdir -p dist
@@ -74,7 +74,7 @@ jobs:
       shell: msys2 {0}
       run: |
         ./autogen.sh
-        ./configure --enable-static --disable-shared --with-pic
+        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb
         make -j$(nproc)
         strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
         mkdir -p dist

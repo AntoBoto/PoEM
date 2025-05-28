@@ -34,7 +34,7 @@ jobs:
         sudo apt-get install -y \
           build-essential libtool autotools-dev automake pkg-config \
           libevent-dev libssl-dev \
-          libboost-system-dev libboost-filesystem-dev libboost-thread-dev libboost-chrono-dev libboost-iostreams-dev libboost-program-options-dev \
+          libboost-system-dev libboost-filesystem-dev libboost-thread-dev libboost-chrono-dev libboost-iostreams-dev libboost-program-options-dev libboost-test-dev \
           qtbase5-dev qttools5-dev-tools protobuf-compiler \
           libqrencode-dev libminiupnpc-dev libdb++-dev
 

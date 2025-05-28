@@ -78,6 +78,18 @@ jobs:
       shell: msys2 {0}
       run: |
         ./autogen.sh
+        
+        echo "=== DEBUGGING BOOST SETUP ==="
+        echo "Boost library files in /mingw64/lib:"
+        ls -la /mingw64/lib/libboost* || echo "No boost libraries found"
+        echo
+        echo "Boost header files:"
+        ls -la /mingw64/include/boost/ | head -10 || echo "No boost headers found"
+        echo
+        echo "Current environment variables:"
+        env | grep -i boost || echo "No BOOST env vars set"
+        echo "=== END DEBUGGING ==="
+        
         # Explicit approach with cleaner variable setup
         export BOOST_ROOT=${BOOST_ROOT:-/mingw64}
         export BOOST_INCLUDEDIR=${BOOST_INCLUDEDIR:-/mingw64/include}
@@ -90,13 +102,29 @@ jobs:
         export BOOST_PROGRAM_OPTIONS_LIB=boost_program_options-mt
         export BOOST_UNIT_TEST_FRAMEWORK_LIB=boost_unit_test_framework-mt
 
+        echo "=== RUNNING CONFIGURE ==="
+        echo "Environment variables set:"
+        env | grep BOOST
+        echo
+        
         # Explicit CPPFLAGS and LDFLAGS to make paths clear to configure
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
           LDFLAGS="-L${BOOST_LIBRARYDIR}" \
           --enable-static --disable-shared --with-pic \
           --with-incompatible-bdb --with-qt=no \
-          --with-boost="${BOOST_ROOT}"
+          --with-boost="${BOOST_ROOT}" || {
+          
+          echo "=== CONFIGURE FAILED - SHOWING CONFIG.LOG ==="
+          echo "Last 100 lines of config.log:"
+          tail -100 config.log
+          echo
+          echo "=== BOOST-RELATED ERRORS FROM CONFIG.LOG ==="
+          grep -i -A5 -B5 "boost\|error\|failed" config.log | tail -50
+          echo "=== END CONFIG.LOG DEBUG ==="
+          exit 1
+        }
+        
         make -j$(nproc)
         strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
         mkdir -p dist

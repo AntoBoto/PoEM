@@ -64,6 +64,10 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         ./autogen.sh
+        export BOOST_SYSTEM_LIB="-lboost_system-mt"
+        export BOOST_FILESYSTEM_LIB="-lboost_filesystem-mt"
+        export BOOST_THREAD_LIB="-lboost_thread-mt"
+        export BOOST_CHRONO_LIB="-lboost_chrono-mt"
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb
         make -j$(nproc)
         strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
@@ -75,6 +79,10 @@ jobs:
       shell: msys2 {0}
       run: |
         ./autogen.sh
+        export BOOST_SYSTEM_LIB="-lboost_system-mt"
+        export BOOST_FILESYSTEM_LIB="-lboost_filesystem-mt"
+        export BOOST_THREAD_LIB="-lboost_thread-mt"
+        export BOOST_CHRONO_LIB="-lboost_chrono-mt"
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb
         make -j$(nproc)
         strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe

@@ -69,9 +69,25 @@ jobs:
         ./autogen.sh
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
         make -j$(nproc)
-        strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
-        mkdir -p dist
-        cp src/brrrfrend src/brrrfren-cli src/brrrfren-tx dist/
+        
+        # 🔍 Debug: Check what binaries were actually created
+        echo "=== Checking what binaries exist in src/ ==="
+        ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|brrrfren)"
+        
+        # 🎯 Use actual binary names (probably dogecoin* not brrrfren*)
+        if [ -f src/dogecoind ]; then
+          strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
+          mkdir -p dist
+          cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
+        elif [ -f src/brrrfrend ]; then
+          strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
+          mkdir -p dist
+          cp src/brrrfrend src/brrrfren-cli src/brrrfren-tx dist/
+        else
+          echo "ERROR: Could not find expected binaries!"
+          ls -la src/
+          exit 1
+        fi
 
     - name: Build BrrrFren (Windows)
       if: matrix.os == 'windows-latest'

@@ -80,15 +80,13 @@ jobs:
         ./autogen.sh
         
         # Work around MSYS2 missing libboost_system-mt.a issue
-        # Create a dummy libboost_system-mt.a since boost::system is mostly header-only in newer versions
         echo "Working around missing libboost_system-mt.a in MSYS2..."
         if [ ! -f /mingw64/lib/libboost_system-mt.a ]; then
           echo "Creating dummy libboost_system-mt.a (header-only in boost 1.88)"
           ar crs /mingw64/lib/libboost_system-mt.a
         fi
         
-        # Alternative approach: modify configure to skip boost_system linking test
-        # Since boost::system is header-only in modern boost versions anyway
+        # Set boost environment variables
         export BOOST_ROOT=/mingw64
         export BOOST_INCLUDEDIR=/mingw64/include
         export BOOST_LIBRARYDIR=/mingw64/lib
@@ -99,13 +97,16 @@ jobs:
         export BOOST_PROGRAM_OPTIONS_LIB=boost_program_options-mt
         export BOOST_UNIT_TEST_FRAMEWORK_LIB=boost_unit_test_framework-mt
         
-        # Force configure to accept that boost_system is available (since it's header-only)
+        # Force configure to accept that boost_system is available
         export ax_cv_boost_system=yes
-        export BOOST_SYSTEM_LIB=""  # Empty since it's header-only
+        
+        # 🎯 FIX: Force C++17 to fix Boost Math template errors
+        export CXXFLAGS="-g -O2 -std=c++17"
         
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
           LDFLAGS="-L${BOOST_LIBRARYDIR}" \
+          CXXFLAGS="${CXXFLAGS}" \
           --enable-static --disable-shared --with-pic \
           --with-incompatible-bdb --with-qt=no \
           --with-boost="${BOOST_ROOT}"

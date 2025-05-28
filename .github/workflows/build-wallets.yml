@@ -78,15 +78,14 @@ jobs:
       shell: msys2 {0}
       run: |
         ./autogen.sh
+        # Check what boost libraries are actually available
+        echo "=== Boost library files in /mingw64/lib ==="
+        ls -la /mingw64/lib/libboost*
+        echo "=== End boost library listing ==="
+        
+        # Try direct library specification approach
         export BOOST_ROOT=/mingw64
-        export BOOST_INCLUDEDIR=/mingw64/include
-        export BOOST_LIBRARYDIR=/mingw64/lib
-        export BOOST_SYSTEM_LIB=boost_system-mt
-        export BOOST_FILESYSTEM_LIB=boost_filesystem-mt
-        export BOOST_THREAD_LIB=boost_thread-mt
-        export BOOST_CHRONO_LIB=boost_chrono-mt
-        export BOOST_PROGRAM_OPTIONS_LIB=boost_program_options-mt
-        export BOOST_UNIT_TEST_FRAMEWORK_LIB=boost_unit_test_framework-mt
+        export LIBS="-L/mingw64/lib -lboost_system-mt -lboost_filesystem-mt -lboost_thread-mt -lboost_chrono-mt -lboost_program_options-mt"
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no --with-boost=/mingw64
         make -j$(nproc)
         strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe

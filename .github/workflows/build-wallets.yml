@@ -33,7 +33,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           build-essential libtool autotools-dev automake pkg-config \
-          libevent-dev libssl-dev libboost-all-dev \
+          libevent-dev libssl-dev \
+          libboost-system-dev libboost-filesystem-dev libboost-thread-dev libboost-chrono-dev \
           qtbase5-dev qttools5-dev-tools protobuf-compiler \
           libqrencode-dev libminiupnpc-dev libdb++-dev
 
@@ -64,11 +65,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         ./autogen.sh
-        export BOOST_SYSTEM_LIB="-lboost_system-mt"
-        export BOOST_FILESYSTEM_LIB="-lboost_filesystem-mt"
-        export BOOST_THREAD_LIB="-lboost_thread-mt"
-        export BOOST_CHRONO_LIB="-lboost_chrono-mt"
-        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb
+        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
         make -j$(nproc)
         strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
         mkdir -p dist
@@ -83,7 +80,7 @@ jobs:
         export BOOST_FILESYSTEM_LIB="-lboost_filesystem-mt"
         export BOOST_THREAD_LIB="-lboost_thread-mt"
         export BOOST_CHRONO_LIB="-lboost_chrono-mt"
-        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb
+        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
         make -j$(nproc)
         strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
         mkdir -p dist

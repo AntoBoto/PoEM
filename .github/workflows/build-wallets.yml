@@ -71,7 +71,7 @@ jobs:
       if: matrix.os == 'ubuntu-22.04'
       run: |
         ./autogen.sh
-        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
+        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=yes
         make -j$(nproc)
         
         # 🔍 Debug: Check what binaries were actually created
@@ -83,10 +83,20 @@ jobs:
           strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
           mkdir -p dist
           cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
+          # Copy Qt GUI wallet if built
+          if [ -f src/qt/dogecoin-qt ]; then
+            strip src/qt/dogecoin-qt
+            cp src/qt/dogecoin-qt dist/
+          fi
         elif [ -f src/brrrfrend ]; then
           strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
           mkdir -p dist
           cp src/brrrfrend src/brrrfren-cli src/brrrfren-tx dist/
+          # Copy Qt GUI wallet if built
+          if [ -f src/qt/brrrfren-qt ]; then
+            strip src/qt/brrrfren-qt
+            cp src/qt/brrrfren-qt dist/
+          fi
         else
           echo "ERROR: Could not find expected binaries!"
           ls -la src/
@@ -129,7 +139,7 @@ jobs:
           LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
           CXXFLAGS="${CXXFLAGS}" \
           --enable-static --disable-shared --with-pic \
-          --with-incompatible-bdb --with-qt=no \
+          --with-incompatible-bdb --with-qt=yes \
           --disable-tests --disable-bench \
           --with-boost="${BOOST_ROOT}"
           
@@ -144,10 +154,20 @@ jobs:
           strip src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe
           mkdir -p dist
           cp src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe dist/
+          # Copy Qt GUI wallet if built
+          if [ -f src/qt/dogecoin-qt.exe ]; then
+            strip src/qt/dogecoin-qt.exe
+            cp src/qt/dogecoin-qt.exe dist/
+          fi
         elif [ -f src/brrrfrend.exe ]; then
           strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
           mkdir -p dist
           cp src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe dist/
+          # Copy Qt GUI wallet if built
+          if [ -f src/qt/brrrfren-qt.exe ]; then
+            strip src/qt/brrrfren-qt.exe
+            cp src/qt/brrrfren-qt.exe dist/
+          fi
         else
           echo "ERROR: Could not find expected binaries!"
           ls -la src/
@@ -212,13 +232,21 @@ jobs:
         # Copy all dependencies
         copy_dll_and_deps "$MAIN_EXE" "$DEST_DIR"
         
-        # Also process CLI and TX executables
+        # Also copy the dependencies of the CLI, TX, and Qt tools
         if [[ "$MAIN_EXE" == *"dogecoind.exe" ]]; then
           copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-cli.exe}" "$DEST_DIR"
           copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-tx.exe}" "$DEST_DIR"
+          # Include Qt GUI wallet if it exists
+          if [[ -f "${MAIN_EXE/src\/dogecoind.exe/src/qt/dogecoin-qt.exe}" ]]; then
+            copy_dll_and_deps "${MAIN_EXE/src\/dogecoind.exe/src/qt/dogecoin-qt.exe}" "$DEST_DIR"
+          fi
         elif [[ "$MAIN_EXE" == *"brrrfrend.exe" ]]; then
           copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-cli.exe}" "$DEST_DIR"
           copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-tx.exe}" "$DEST_DIR"
+          # Include Qt GUI wallet if it exists
+          if [[ -f "${MAIN_EXE/src\/brrrfrend.exe/src/qt/brrrfren-qt.exe}" ]]; then
+            copy_dll_and_deps "${MAIN_EXE/src\/brrrfrend.exe/src/qt/brrrfren-qt.exe}" "$DEST_DIR"
+          fi
         fi
         
         echo "All dependencies copied to $DEST_DIR"

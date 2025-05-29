@@ -153,6 +153,83 @@ jobs:
           ls -la src/
           exit 1
         fi
+        
+        # Copy ALL required DLLs for Windows using a more reliable approach
+        echo "Finding and copying all required DLLs..."
+        
+        # Get the main executable to work with
+        MAIN_EXE=""
+        if [ -f src/dogecoind.exe ]; then
+          MAIN_EXE="src/dogecoind.exe"
+        elif [ -f src/brrrfrend.exe ]; then
+          MAIN_EXE="src/brrrfrend.exe"
+        else
+          echo "Could not find main executable"
+          exit 1
+        fi
+        
+        # First, ensure we have the ldd-equivalent tool for Windows
+        pacman -S --noconfirm mingw-w64-x86_64-ntldd-git || echo "ntldd already installed"
+        
+        # Create a script to find and copy all dependencies
+        cat > copy_deps.sh << 'EOF'
+        #!/bin/bash
+        
+        # Function to copy a DLL and its dependencies recursively
+        function copy_dll_and_deps() {
+          local dll="$1"
+          local dest="$2"
+          local dll_basename=$(basename "$dll")
+          
+          # If we've already processed this DLL, skip it
+          if [[ -f "$dest/$dll_basename" ]]; then
+            return
+          fi
+          
+          echo "Copying $dll_basename"
+          cp "$dll" "$dest/"
+          
+          # Find dependencies
+          ntldd "$dll" | grep -i "mingw" | sed -n 's/.*=> \(.*\) .*/\1/p' | while read dep; do
+            if [[ -f "$dep" && "$dep" != "$dll" ]]; then
+              copy_dll_and_deps "$dep" "$dest"
+            fi
+          done
+        }
+        
+        # Main executable to process
+        MAIN_EXE="$1"
+        DEST_DIR="$2"
+        
+        # First copy MSYS2 core DLLs that might be missed
+        for lib in libwinpthread-1.dll libstdc++-6.dll libgcc_s_seh-1.dll; do
+          cp "/mingw64/bin/$lib" "$DEST_DIR/" 2>/dev/null || echo "Warning: Could not find $lib"
+        done
+        
+        # Handle Berkeley DB specifically as it might not be picked up
+        cp /mingw64/bin/libdb*.dll "$DEST_DIR/" 2>/dev/null || echo "Warning: Could not find Berkeley DB DLLs"
+        
+        # Copy all dependencies
+        copy_dll_and_deps "$MAIN_EXE" "$DEST_DIR"
+        
+        # Also process CLI and TX executables
+        if [[ "$MAIN_EXE" == *"dogecoind.exe" ]]; then
+          copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-cli.exe}" "$DEST_DIR"
+          copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-tx.exe}" "$DEST_DIR"
+        elif [[ "$MAIN_EXE" == *"brrrfrend.exe" ]]; then
+          copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-cli.exe}" "$DEST_DIR"
+          copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-tx.exe}" "$DEST_DIR"
+        fi
+        
+        echo "All dependencies copied to $DEST_DIR"
+        EOF
+        
+        chmod +x copy_deps.sh
+        ./copy_deps.sh "$MAIN_EXE" "dist"
+        
+        # List all DLLs that were copied
+        echo "=== DLLs included in package ==="
+        ls -la dist/*.dll
 
     - name: Package binaries
       run: |

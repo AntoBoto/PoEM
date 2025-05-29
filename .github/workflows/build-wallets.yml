@@ -15,14 +15,14 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Cache Linux dependencies
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
       uses: actions/cache@v4
       with:
         path: |
@@ -33,7 +33,7 @@ jobs:
           ${{ matrix.os }}-deps-
 
     - name: Install dependencies (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -68,7 +68,7 @@ jobs:
           mingw-w64-x86_64-miniupnpc
 
     - name: Build BrrrFren (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
       run: |
         ./autogen.sh
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
@@ -134,13 +134,29 @@ jobs:
           --with-boost="${BOOST_ROOT}"
           
         make -j$(nproc)
-        strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
-        mkdir -p dist
-        cp src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe dist/
+        
+        # 🔍 Debug: Check what binaries were actually created
+        echo "=== Checking what binaries exist in src/ ==="
+        ls -la src/ | grep -E "\.exe$"
+        
+        # 🎯 Use actual binary names - same logic as Linux
+        if [ -f src/dogecoind.exe ]; then
+          strip src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe
+          mkdir -p dist
+          cp src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe dist/
+        elif [ -f src/brrrfrend.exe ]; then
+          strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
+          mkdir -p dist
+          cp src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe dist/
+        else
+          echo "ERROR: Could not find expected binaries!"
+          ls -la src/
+          exit 1
+        fi
 
     - name: Package binaries
       run: |
-        if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
           cd dist
           tar -czf ../brrrfren-linux-x64.tar.gz *
           cd ..
@@ -155,7 +171,7 @@ jobs:
 
     - name: Generate checksums
       run: |
-        if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
           sha256sum brrrfren-linux-x64.tar.gz > brrrfren-linux-x64.tar.gz.sha256
         else
           sha256sum brrrfren-windows-x64.zip > brrrfren-windows-x64.zip.sha256

@@ -396,6 +396,13 @@ dogecoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 dogecoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 dogecoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
+# poemd binary (PoEM daemon) #
+poemd_SOURCES = $(dogecoind_SOURCES)
+poemd_CPPFLAGS = $(dogecoind_CPPFLAGS) -D'BITCOIN_DAEMON_NAME=\"poemd\"'
+poemd_CXXFLAGS = $(dogecoind_CXXFLAGS)
+poemd_LDFLAGS = $(dogecoind_LDFLAGS)
+poemd_LDADD = $(dogecoind_LDADD)
+
 if TARGET_WINDOWS
 dogecoind_SOURCES += bitcoind-res.rc
 endif
@@ -421,6 +428,13 @@ dogecoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 dogecoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 dogecoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
+# poem-cli binary (PoEM CLI) #
+poem_cli_SOURCES = $(dogecoin_cli_SOURCES)
+poem_cli_CPPFLAGS = $(dogecoin_cli_CPPFLAGS)
+poem_cli_CXXFLAGS = $(dogecoin_cli_CXXFLAGS)
+poem_cli_LDFLAGS = $(dogecoin_cli_LDFLAGS)
+poem_cli_LDADD = $(dogecoin_cli_LDADD)
+
 if TARGET_WINDOWS
 dogecoin_cli_SOURCES += bitcoin-cli-res.rc
 endif
@@ -439,6 +453,13 @@ dogecoin_tx_SOURCES = bitcoin-tx.cpp
 dogecoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 dogecoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 dogecoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+
+# poem-tx binary (PoEM transaction tool) #
+poem_tx_SOURCES = $(dogecoin_tx_SOURCES)
+poem_tx_CPPFLAGS = $(dogecoin_tx_CPPFLAGS)
+poem_tx_CXXFLAGS = $(dogecoin_tx_CXXFLAGS)
+poem_tx_LDFLAGS = $(dogecoin_tx_LDFLAGS)
+poem_tx_LDADD = $(dogecoin_tx_LDADD)
 
 if TARGET_WINDOWS
 dogecoin_tx_SOURCES += bitcoin-tx-res.rc

@@ -1,8 +1,9 @@
 dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
+# Version bump for PoEM rebranding
 define(_CLIENT_VERSION_MAJOR, 1)
-define(_CLIENT_VERSION_MINOR, 14)
-define(_CLIENT_VERSION_REVISION, 99)
+define(_CLIENT_VERSION_MINOR, 15)
+define(_CLIENT_VERSION_REVISION, 0)
 define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, false)
 define(_COPYRIGHT_YEAR, 2024)
@@ -16,9 +17,21 @@ AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
+# Binary names - keep old names for backward compatibility
 BITCOIN_DAEMON_NAME=dogecoind
 BITCOIN_GUI_NAME=dogecoin-qt
 BITCOIN_CLI_NAME=dogecoin-cli
+
+# New PoEM binary names
+POEM_DAEMON_NAME=poemd
+POEM_CLI_NAME=poem-cli
+POEM_TX_NAME=poem-tx
+AC_SUBST(POEM_DAEMON_NAME)
+AC_SUBST(POEM_CLI_NAME)
+AC_SUBST(POEM_TX_NAME)
+
+# Warn about deprecated binary names
+AC_MSG_WARN([dogecoind/dogecoin-cli names are deprecated and will be removed in a future version. Use poemd/poem-cli instead.])
 BITCOIN_TX_NAME=dogecoin-tx
 
 AC_CANONICAL_HOST

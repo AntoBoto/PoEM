@@ -5,6 +5,10 @@ src/dogecoin
 src/dogecoind
 src/dogecoin-cli
 src/dogecoin-tx
+src/poem
+src/poemd
+src/poem-cli
+src/poem-tx
 src/test/test_dogecoin
 src/test/test_dogecoin_fuzzy
 src/qt/test/test_dogecoin-qt

@@ -35,7 +35,7 @@ jobs:
           ${{ matrix.os }}-deps-
 
     - name: Install dependencies (Linux)
-      if: matrix.os == 'ubuntu-22.04'
+      if: ${{ matrix.os == 'ubuntu-22.04' }}
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -47,9 +47,11 @@ jobs:
         
         # Verify Boost headers are installed
         echo "=== Verifying Boost headers ==="
-        ls -la /usr/include/boost/type_traits/is_standard_layout.hpp || echo "ERROR: Boost headers not found!"
-        dpkg -L libboost-dev | grep -i type_traits || echo "WARNING: Boost type_traits not found!"
-        echo "Boost version: $(grep '#define BOOST_LIB_VERSION' /usr/include/boost/version.hpp 2>/dev/null || echo 'Boost version not found')"
+        if [ ! -f /usr/include/boost/type_traits/is_standard_layout.hpp ]; then
+          echo "::error::Boost headers not found in /usr/include/boost/"
+          exit 1
+        fi
+        echo "✓ Verified Boost headers"
 
     - name: Install dependencies (Windows)
       if: matrix.os == 'windows-latest'
@@ -74,51 +76,49 @@ jobs:
           mingw-w64-x86_64-qrencode
           mingw-w64-x86_64-miniupnpc
 
-    - name: Verify Boost installation
-      if: matrix.os == 'ubuntu-22.04'
+    - name: Verify policy directory (Linux)
+      if: ${{ matrix.os == 'ubuntu-22.04' }}
       run: |
-        echo "=== Verifying Boost installation ==="
-        if [ ! -f /usr/include/boost/type_traits/is_standard_layout.hpp ]; then
-          echo "ERROR: Boost headers not found in expected location"
-          exit 1
-        fi
-        echo "✓ Boost headers verified"
-
-    - name: Verify policy directory
-      if: matrix.os == 'ubuntu-22.04'
-      run: |
-        if [ -f .gitmodules ]; then
-          echo "=== Initializing submodules ==="
-          git submodule update --init --recursive
-        fi
         echo "=== Verifying policy directory ==="
-        missing=0
         for header in "src/policy/feerate.h" "src/policy/policy.h"; do
           if [ ! -f "$header" ]; then
-            echo "ERROR: Missing required header: $header"
-            missing=1
+            echo "::error::Missing required header: $header"
+            exit 1
           fi
         done
-        if [ $missing -ne 0 ]; then
-          echo "Please ensure the policy directory is properly set up with all required headers."
-          exit 1
-        fi
-        echo "✓ Policy headers verified"
+        echo "✓ All required headers present"
 
-    - name: Clean, configure & build (Linux)
-      if: matrix.os == 'ubuntu-22.04'
+    - name: Build (Linux)
+      if: ${{ matrix.os == 'ubuntu-22.04' }}
       run: |
+        # Clean previous builds
         make distclean || true
-        if [ -f autogen.sh ]; then ./autogen.sh; fi
+        
+        # Generate build system
+        if [ -f autogen.sh ]; then 
+          ./autogen.sh 
+        fi
+        
+        # Configure with necessary flags
         ./configure \
-          --enable-static --disable-shared --with-pic \
-          --with-incompatible-bdb --with-qt=no \
-          --disable-tests --disable-bench --disable-wallet --disable-zmq \
+          --enable-static \
+          --disable-shared \
+          --with-pic \
+          --with-incompatible-bdb \
+          --with-qt=no \
+          --disable-tests \
+          --disable-bench \
+          --disable-wallet \
+          --disable-zmq \
           CPPFLAGS="-DHAVE_CONFIG_H -I$(pwd)/src"
+        
+        # Build with verbose output
         make V=1 -j$(nproc)
-        echo "=== Checking binaries in src/ ==="
-        ls -la src/ | grep -E "(dogecoind|dogecoin|poemd|poem)"
+        
+        # Prepare distribution directory
         mkdir -p dist
+        
+        # Handle both poemd and dogecoind binary names
         if [ -f src/poemd ]; then
           strip src/poemd src/poem-cli src/poem-tx
           cp src/poemd src/poem-cli src/poem-tx dist/
@@ -126,11 +126,16 @@ jobs:
           strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
           cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
         else
-          echo "ERROR: No expected binaries found!"; exit 1
+          echo "::error::No binaries found in src/ directory"
+          ls -la src/
+          exit 1
         fi
+        
+        echo "=== Build artifacts ==="
+        ls -la dist/
 
     - name: Build (Windows)
-      if: matrix.os == 'windows-latest'
+      if: ${{ matrix.os == 'windows-latest' }}
       shell: msys2 {0}
       run: |
         ./autogen.sh
@@ -160,7 +165,9 @@ jobs:
           strip src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe
           cp src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe dist/
         else
-          echo "ERROR: No expected binaries found!"; exit 1
+          echo "ERROR: No expected binaries found!"
+          ls -la src/
+          exit 1
         fi
 
     - name: Package binaries
@@ -174,7 +181,11 @@ jobs:
 
     - name: Generate checksums
       run: |
-        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then sha256sum poem-linux-x64.tar.gz > poem-linux-x64.tar.gz.sha256; else sha256sum poem-windows-x64.zip > poem-windows-x64.zip.sha256; fi
+        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then 
+          sha256sum poem-linux-x64.tar.gz > poem-linux-x64.tar.gz.sha256
+        else 
+          sha256sum poem-windows-x64.zip > poem-windows-x64.zip.sha256 
+        fi
       shell: bash
 
     - name: Upload binaries to release

@@ -12,22 +12,25 @@
 #define BITCOIN_UTIL_H
 
 #if defined(HAVE_CONFIG_H)
-"config/poem-config.h"
+#include "config/poem-config.h"
 #endif
 
+// Include boost_compat.h first to ensure proper include order and macro handling
+#include "boost_compat.h"
+
+// Project includes
 #include "compat.h"
 #include "fs.h"
 #include "tinyformat.h"
 #include "utiltime.h"
 
+// Standard C/C++ includes
 #include <atomic>
+#include <cstdint>
 #include <exception>
 #include <map>
-#include <stdint.h>
 #include <string>
 #include <vector>
-
-#include "boost_compat.h"  // Handles all Boost includes with proper ordering and macro handling
 
 // Application startup time (used for uptime calculation)
 int64_t GetStartupTime();

@@ -10,9 +10,10 @@
 // boost::thread / boost::function / boost::chrono should be ported to
 // std::thread / std::function / std::chrono when we support C++11.
 //
+// Include boost_compat.h first to ensure proper include order and macro handling
+#include "boost_compat.h"
+
 #include <functional>
-#include <boost/chrono/chrono.hpp>
-#include <boost/thread.hpp>
 #include <map>
 
 //

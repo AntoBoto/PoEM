@@ -5,26 +5,28 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-"config/poem-config.h"
+#include "config/poem-config.h"
 #endif
 
+// Include boost_compat.h first to ensure proper include order and macro handling
+#include "boost_compat.h"
+
+// Standard C/C++ includes
+#include <cstdio>
+
+// Project includes (alphabetical order)
 #include "chainparams.h"
 #include "clientversion.h"
 #include "compat.h"
 #include "fs.h"
-#include "rpc/server.h"
-#include "init.h"
-#include "noui.h"
-#include "scheduler.h"
-#include "util.h"
 #include "httpserver.h"
 #include "httprpc.h"
+#include "init.h"
+#include "noui.h"
+#include "rpc/server.h"
+#include "scheduler.h"
+#include "util.h"
 #include "utilstrencodings.h"
-
-#include "boost_compat.h"
-#include <boost/algorithm/string/predicate.hpp>
-
-#include <stdio.h>
 
 /* Introduction text for doxygen: */
 

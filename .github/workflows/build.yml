@@ -36,6 +36,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
+        # Install build essentials and core dependencies
         sudo apt-get install -y \
           build-essential \
           libtool \
@@ -44,15 +45,6 @@ jobs:
           pkg-config \
           libevent-dev \
           libssl-dev \
-          libboost-all-dev \
-          libboost-system-dev \
-          libboost-filesystem-dev \
-          libboost-thread-dev \
-          libboost-chrono-dev \
-          libboost-iostreams-dev \
-          libboost-program-options-dev \
-          libboost-test-dev \
-          libboost-dev \
           qtbase5-dev \
           qttools5-dev-tools \
           protobuf-compiler \
@@ -62,10 +54,27 @@ jobs:
           libdb5.3++-dev \
           libsqlite3-dev \
           libzmq3-dev
+        
+        # Install Boost libraries and headers
+        # Using meta-package to ensure all required Boost components are installed
+        sudo apt-get install -y libboost-all-dev
+        
+        # Verify Boost headers are installed
+        echo "=== Verifying Boost headers ==="
+        ls -la /usr/include/boost/type_traits/is_standard_layout.hpp || echo "ERROR: Boost headers not found!"
+        dpkg -L libboost-dev | grep -i type_traits || echo "WARNING: Boost type_traits not found!"
+        echo "Boost version: $(grep '#define BOOST_LIB_VERSION' /usr/include/boost/version.hpp 2>/dev/null || echo 'Boost version not found')"
     
     - name: Build
       run: |
+        # Clean any previous build artifacts
+        make distclean || true
+        git clean -xfd || true
+        
+        # Regenerate build system
         ./autogen.sh
+        
+        # Configure with necessary flags
         ./configure \
           --enable-static \
           --disable-shared \
@@ -76,13 +85,17 @@ jobs:
           --disable-bench \
           --disable-wallet \
           --disable-zmq \
-          CPPFLAGS="-DHAVE_CONFIG_H"
+          --with-boost-libdir=/usr/lib/x86_64-linux-gnu \
+          --with-boost=/usr \
+          CXXFLAGS="-std=c++17 -DHAVE_CONFIG_H -D_GLIBCXX_USE_CXX11_ABI=1"
         
-        make -j$(nproc)
+        # Build with verbose output for debugging
+        make V=1 -j$(nproc) || make V=1
         
         # Check for built binaries
-        echo "=== Checking what binaries exist in src/ ==="
-        ls -la src/ | grep -E "(poemd|poem)"
+        echo "=== Build Artifacts ==="
+        find src/ -type f -executable -ls
+        ls -la src/ | grep -E "(poemd|poem|dogecoin)" || echo "No binaries found"
         
         # Create dist directory and copy binaries
         mkdir -p dist

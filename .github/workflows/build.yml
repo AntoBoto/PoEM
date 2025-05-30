@@ -41,13 +41,7 @@ jobs:
           libssl-dev \
           libevent-dev \
           bsdmainutils \
-          libboost-system-dev \
-          libboost-filesystem-dev \
-          libboost-chrono-dev \
-          libboost-program-options-dev \
-          libboost-test-dev \
-          libboost-thread-dev \
-          libboost-signals-dev \
+          libboost1.71-dev \
           git \
           wget \
           ca-certificates

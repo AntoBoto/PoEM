@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
     
@@ -61,7 +61,9 @@ jobs:
         ls -la src/poemd
     
     - name: Upload Binary
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: poem-linux-binaries
         path: src/poemd
+        if-no-files-found: error
+        retention-days: 5

@@ -1,4 +1,5 @@
 // Copyright (c) 2015-2022 The BrrrFren Core developers
+// Copyright (c) 2024 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,11 +8,11 @@
 
 #include "policy/policy.h"
 #include "arith_uint256.h"
-#include "dogecoin.h"
+#include "brrrfren.h"
 #include "txmempool.h"
 #include "util.h"
 #include "validation.h"
-#include "dogecoin-fees.h"
+#include "brrrfren-fees.h"
 
 int static generateMTRandom(unsigned int s, int range)
 {

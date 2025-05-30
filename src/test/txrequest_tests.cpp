@@ -6,7 +6,7 @@
 #include "txrequest.h"
 #include "uint256.h"
 
-#include "test/test_bitcoin.h"
+#include "test/test_brrrfren.h"
 
 #include <algorithm>
 #include <functional>

@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
 // Copyright (c) 2022 The BrrrFren Core developers
+// Copyright (c) 2024 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -81,13 +82,13 @@ static int AppInitRPC(int argc, char* argv[])
     //
     ParseParameters(argc, argv);
     if (argc<2 || IsArgSet("-?") || IsArgSet("-h") || IsArgSet("-help") || IsArgSet("-version")) {
-        std::string strUsage = strprintf(_("%s RPC client version"), _(PACKAGE_NAME)) + " " + FormatFullVersion() + "\n";
+        std::string strUsage = strprintf(_("%s RPC client version"), "PoEM") + " " + FormatFullVersion() + "\n";
         if (!IsArgSet("-version")) {
             strUsage += "\n" + _("Usage:") + "\n" +
-                  "  dogecoin-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), _(PACKAGE_NAME)) + "\n" +
-                  "  dogecoin-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), _(PACKAGE_NAME)) + "\n" +
-                  "  dogecoin-cli [options] help                " + _("List commands") + "\n" +
-                  "  dogecoin-cli [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  poem-cli [options] <command> [params]  " + strprintf(_("Send command to %s"), "PoEM") + "\n" +
+                  "  poem-cli [options] -named <command> [name=value] ... " + strprintf(_("Send command to %s (with named arguments)"), "PoEM") + "\n" +
+                  "  poem-cli [options] help                " + _("List commands") + "\n" +
+                  "  poem-cli [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessageCli();
         }

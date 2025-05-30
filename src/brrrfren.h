@@ -1,4 +1,5 @@
 // Copyright (c) 2015-2022 The BrrrFren Core developers
+// Copyright (c) 2024 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

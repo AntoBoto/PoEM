@@ -13,7 +13,7 @@
  * for both bitcoind and bitcoin-core, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Shibetoshi");
+const std::string CLIENT_NAME("PoEM");
 
 /**
  * Client version number
@@ -79,7 +79,7 @@ static std::string FormatVersion(int nVersion)
 
 std::string FormatFullVersion()
 {
-    return CLIENT_BUILD;
+    return "PoEM Core " + CLIENT_BUILD;
 }
 
 /** 

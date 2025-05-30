@@ -7,7 +7,7 @@
 #include "fs.h"
 #include "uint256.h"
 #include "random.h"
-#include "test/test_bitcoin.h"
+#include "test/test_brrrfren.h"
 
 #include <boost/assign/std/vector.hpp> // for 'operator+=()'
 #include <boost/assert.hpp>

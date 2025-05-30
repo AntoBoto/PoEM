@@ -6,14 +6,14 @@
 #include "chainparams.h"
 #include "coins.h"
 #include "consensus/merkle.h"
-#include "dogecoin.h"
+#include "brrrfren.h"
 #include "primitives/block.h"
 #include "script/script.h"
 #include "uint256.h"
 #include "utilstrencodings.h"
 #include "validation.h"
 
-#include "test/test_bitcoin.h"
+#include "test/test_brrrfren.h"
 
 #include <boost/test/unit_test.hpp>
 

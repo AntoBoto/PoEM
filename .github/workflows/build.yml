@@ -41,10 +41,15 @@ jobs:
         sudo apt-get install -y \
           build-essential libtool autotools-dev automake pkg-config \
           libevent-dev libssl-dev \
-          libboost-system-dev libboost-filesystem-dev libboost-thread-dev libboost-chrono-dev \
-          libboost-iostreams-dev libboost-program-options-dev libboost-test-dev \
+          libboost-all-dev \
           qtbase5-dev qttools5-dev-tools protobuf-compiler \
           libqrencode-dev libminiupnpc-dev libdb++-dev
+        
+        # Verify Boost headers are installed
+        echo "=== Verifying Boost headers ==="
+        ls -la /usr/include/boost/type_traits/is_standard_layout.hpp || echo "ERROR: Boost headers not found!"
+        dpkg -L libboost-dev | grep -i type_traits || echo "WARNING: Boost type_traits not found!"
+        echo "Boost version: $(grep '#define BOOST_LIB_VERSION' /usr/include/boost/version.hpp 2>/dev/null || echo 'Boost version not found')"
 
     - name: Install dependencies (Windows)
       if: matrix.os == 'windows-latest'
@@ -69,12 +74,47 @@ jobs:
           mingw-w64-x86_64-qrencode
           mingw-w64-x86_64-miniupnpc
 
-    - name: Build (Linux)
+    - name: Verify build environment (Linux)
       if: matrix.os == 'ubuntu-22.04'
       run: |
-        ./autogen.sh
-        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
-        make -j$(nproc)
+        # Verify policy directory exists
+        if [ ! -d src/policy ]; then
+          echo "ERROR: src/policy directory is missing!"
+          echo "Please ensure the policy directory is present in the source tree."
+          exit 1
+        fi
+        
+        # Verify required headers
+        for header in "src/policy/feerate.h" "src/policy/policy.h"; do
+          if [ ! -f "$header" ]; then
+            echo "ERROR: Missing required header: $header"
+            exit 1
+          fi
+        done
+        
+        # Clean any previous build artifacts
+        make distclean || true
+        
+        # Regenerate build system
+        if [ -f autogen.sh ]; then
+          ./autogen.sh
+        fi
+        
+        # Configure with necessary flags
+        ./configure \
+          --enable-static \
+          --disable-shared \
+          --with-pic \
+          --with-incompatible-bdb \
+          --with-qt=no \
+          --disable-tests \
+          --disable-bench \
+          --disable-wallet \
+          --disable-zmq \
+          CPPFLAGS="-DHAVE_CONFIG_H -I$(pwd)/src"
+        
+        # Build with verbose output
+        make V=1 -j$(nproc) || make V=1
         
         echo "=== Checking what binaries exist in src/ ==="
         ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|brrrfren)"

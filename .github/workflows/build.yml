@@ -22,11 +22,18 @@ jobs:
       with:
         submodules: recursive
     
+    - name: Set up GCC 9
+      uses: actions/setup-gcc@v3
+      with:
+        gcc-version: '9'
+        
     - name: Install Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
           build-essential \
+          g++-9 \
+          gcc-9 \
           libtool \
           autotools-dev \
           automake \
@@ -34,34 +41,39 @@ jobs:
           libssl-dev \
           libevent-dev \
           bsdmainutils \
-          libboost1.74-dev \
-          libboost-system1.74-dev \
-          libboost-filesystem1.74-dev \
-          libboost-chrono1.74-dev \
-          libboost-program-options1.74-dev \
-          libboost-test1.74-dev \
-          libboost-thread1.74-dev \
+          libboost-system-dev \
+          libboost-filesystem-dev \
+          libboost-chrono-dev \
+          libboost-program-options-dev \
+          libboost-test-dev \
+          libboost-thread-dev \
+          libboost-signals-dev \
           git \
           wget \
           ca-certificates
+          
+        # Set GCC 9 as default
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 \
+          --slave /usr/bin/g++ g++ /usr/bin/g++-9 \
+          --slave /usr/bin/gcov gcov /usr/bin/gcov-9
+        sudo update-alternatives --set gcc /usr/bin/gcc-9
         
-        # Install specific version of Boost if needed
-        # wget https://boostorg.jfrog.io/artifactory/main/release/1.74.0/source/boost_1_74_0.tar.bz2
-        # tar xf boost_1_74_0.tar.bz2
-        # cd boost_1_74_0
-        # ./bootstrap.sh --with-libraries=system,filesystem,thread,chrono,program_options,test
-        # sudo ./b2 install
+        # Verify compiler versions
+        gcc --version
+        g++ --version
     
     - name: Build
       run: |
         # Set compiler flags for maximum compatibility
-        export CXXFLAGS="-O2 -pipe -std=c++11 -D_GLIBCXX_USE_CXX11_ABI=0 -fPIC"
+        export CXX="g++-9"
+        export CC="gcc-9"
+        export CXXFLAGS="-O2 -pipe -std=c++11 -fPIC"
         export CFLAGS="-O2 -pipe -fPIC"
-        export CPPFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0"
+        export CPPFLAGS=""
         export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
         
-        # Set Boost root if using custom Boost installation
-        # export BOOST_ROOT="/usr/local"
+        # Set Boost flags
+        export BOOST_ROOT="/usr"
         
         ./autogen.sh
         ./configure \

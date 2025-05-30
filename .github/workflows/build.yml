@@ -18,80 +18,84 @@ jobs:
     runs-on: ubuntu-22.04
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
       with:
         submodules: recursive
     
-    - name: Set up GCC 9
-      uses: egor-tensin/setup-gcc@v1
+    - name: Cache Linux dependencies
+      uses: actions/cache@v4
       with:
-        version: 9
-        
+        path: |
+          ~/.cache/apt
+          ~/.local/share/vcpkg
+        key: ${{ runner.os }}-deps-${{ hashFiles('**/configure.ac') }}
+        restore-keys: |
+          ${{ runner.os }}-deps-
+    
     - name: Install Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
           build-essential \
-          g++-9 \
-          gcc-9 \
           libtool \
           autotools-dev \
           automake \
           pkg-config \
-          libssl-dev \
           libevent-dev \
-          bsdmainutils \
-          libboost1.71-dev \
-          git \
-          wget \
-          ca-certificates
-          
-        # Set GCC 9 as default
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 \
-          --slave /usr/bin/g++ g++ /usr/bin/g++-9 \
-          --slave /usr/bin/gcov gcov /usr/bin/gcov-9
-        sudo update-alternatives --set gcc /usr/bin/gcc-9
-        
-        # Verify compiler versions
-        gcc --version
-        g++ --version
+          libssl-dev \
+          libboost-system-dev \
+          libboost-filesystem-dev \
+          libboost-thread-dev \
+          libboost-chrono-dev \
+          libboost-iostreams-dev \
+          libboost-program-options-dev \
+          libboost-test-dev \
+          qtbase5-dev \
+          qttools5-dev-tools \
+          protobuf-compiler \
+          libqrencode-dev \
+          libminiupnpc-dev \
+          libdb++-dev
     
     - name: Build
       run: |
-        # Set compiler flags for maximum compatibility
-        export CXX="g++-9"
-        export CC="gcc-9"
-        export CXXFLAGS="-O2 -pipe -std=c++11 -fPIC"
-        export CFLAGS="-O2 -pipe -fPIC"
-        export CPPFLAGS=""
-        export LDFLAGS="-Wl,-O1 -Wl,--as-needed"
-        
-        # Set Boost flags
-        export BOOST_ROOT="/usr"
-        
         ./autogen.sh
         ./configure \
-          --prefix=${{ github.workspace }}/depends/x86_64-linux-gnu \
+          --enable-static \
+          --disable-shared \
+          --with-pic \
+          --with-incompatible-bdb \
+          --with-qt=no \
           --disable-tests \
           --disable-bench \
-          --without-gui \
           --disable-wallet \
-          --disable-zmq \
-          --disable-man \
-          CXXFLAGS="$CXXFLAGS" \
-          CFLAGS="$CFLAGS" \
-          CPPFLAGS="$CPPFLAGS"
-        make -j$(nproc) V=1
-    
-    - name: Check Binary
-      run: |
-        file src/poemd
-        ls -la src/poemd
+          --disable-zmq
+        
+        make -j$(nproc)
+        
+        # Check for built binaries
+        echo "=== Checking what binaries exist in src/ ==="
+        ls -la src/ | grep -E "(poemd|poem)"
+        
+        # Create dist directory and copy binaries
+        mkdir -p dist
+        if [ -f src/poemd ]; then
+          strip src/poemd src/poem-cli src/poem-tx
+          cp src/poemd src/poem-cli src/poem-tx dist/
+        elif [ -f src/dogecoind ]; then
+          strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
+          cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
+        else
+          echo "ERROR: Could not find expected binaries!"
+          ls -la src/
+          exit 1
+        fi
     
     - name: Upload Binary
       uses: actions/upload-artifact@v4
       with:
         name: poem-linux-binaries
-        path: src/poemd
+        path: dist/
         if-no-files-found: error
         retention-days: 5

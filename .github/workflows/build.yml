@@ -1,0 +1,67 @@
+name: PoEM Core Build
+
+on:
+  push:
+    branches: [ "main", "master", "dev", "develop", "release/*" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the build with debugging enabled'
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-20.04
+    
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          libtool \
+          autotools-dev \
+          automake \
+          pkg-config \
+          libssl-dev \
+          libevent-dev \
+          bsdmainutils \
+          libboost-system-dev \
+          libboost-filesystem-dev \
+          libboost-chrono-dev \
+          libboost-program-options-dev \
+          libboost-test-dev \
+          libboost-thread-dev \
+          git
+    
+    - name: Build
+      run: |
+        ./autogen.sh
+        ./configure \
+          --prefix=${{ github.workspace }}/depends/x86_64-linux-gnu \
+          --disable-tests \
+          --disable-bench \
+          --without-gui \
+          --disable-wallet \
+          --disable-zmq \
+          --disable-man
+        make -j$(nproc)
+    
+    - name: Check Binary
+      run: |
+        file src/poemd
+        ls -la src/poemd
+    
+    - name: Upload Binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: poem-linux-binaries
+        path: src/poemd

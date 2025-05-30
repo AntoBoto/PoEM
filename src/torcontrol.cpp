@@ -16,9 +16,7 @@
 #include <stdlib.h>
 
 #include <functional>
-#include <boost/bind/bind.hpp>
-#include <boost/signals2/signal.hpp>
-#include <boost/foreach.hpp>
+#include "boost_compat.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>

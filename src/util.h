@@ -27,13 +27,7 @@
 #include <string>
 #include <vector>
 
-// Undefine 'width' macro if it's defined by system headers (like X11)
-#ifdef width
-#undef width
-#endif
-
-#include <boost/signals2/signal.hpp>
-#include <boost/thread/exceptions.hpp>
+#include "boost_compat.h"  // Handles all Boost includes with proper ordering and macro handling
 
 // Application startup time (used for uptime calculation)
 int64_t GetStartupTime();

@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <boost/shared_ptr.hpp>  // Must be included before any other Boost headers
+#include "boost_compat.h"  // Handles all Boost includes with proper ordering and macro handling
 
 class CScheduler;
 class CWallet;

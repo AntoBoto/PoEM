@@ -44,6 +44,7 @@ jobs:
           pkg-config \
           libevent-dev \
           libssl-dev \
+          libboost-all-dev \
           libboost-system-dev \
           libboost-filesystem-dev \
           libboost-thread-dev \
@@ -51,12 +52,23 @@ jobs:
           libboost-iostreams-dev \
           libboost-program-options-dev \
           libboost-test-dev \
+          libboost-type-erasure-dev \
+          libboost-signals-dev \
+          libboost-date-time-dev \
+          libboost-regex-dev \
           qtbase5-dev \
           qttools5-dev-tools \
+          libqt5svg5-dev \
           protobuf-compiler \
+          libprotobuf-dev \
           libqrencode-dev \
           libminiupnpc-dev \
-          libdb++-dev
+          libdb++-dev \
+          libdb5.3++-dev \
+          bsdmainutils \
+          libzmq3-dev \
+          libsqlite3-dev \
+          libqt5gui5
     
     - name: Build
       run: |

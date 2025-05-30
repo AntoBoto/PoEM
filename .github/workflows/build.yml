@@ -74,23 +74,43 @@ jobs:
           mingw-w64-x86_64-qrencode
           mingw-w64-x86_64-miniupnpc
 
-    - name: Verify build environment (Linux)
+    - name: Verify Boost installation
       if: matrix.os == 'ubuntu-22.04'
       run: |
-        # Verify policy directory exists
-        if [ ! -d src/policy ]; then
-          echo "ERROR: src/policy directory is missing!"
-          echo "Please ensure the policy directory is present in the source tree."
+        # Verify Boost headers are present
+        echo "=== Verifying Boost installation ==="
+        if [ ! -f /usr/include/boost/type_traits/is_standard_layout.hpp ]; then
+          echo "ERROR: Boost headers not found in expected location"
+          echo "Please ensure libboost-all-dev is installed"
           exit 1
         fi
+        echo "✓ Boost headers verified"
+
+    - name: Verify policy directory
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        # Initialize submodules if they exist
+        if [ -f .gitmodules ]; then
+          echo "=== Initializing submodules ==="
+          git submodule update --init --recursive
+        fi
         
-        # Verify required headers
+        # Verify policy directory and required headers
+        echo "=== Verifying policy directory ==="
+        local missing=0
         for header in "src/policy/feerate.h" "src/policy/policy.h"; do
           if [ ! -f "$header" ]; then
             echo "ERROR: Missing required header: $header"
-            exit 1
+            missing=1
           fi
         done
+        
+        if [ $missing -ne 0 ]; then
+          echo "Please ensure the policy directory is properly set up with all required headers."
+          echo "You may need to copy the policy directory from Bitcoin Core's source."
+          exit 1
+        fi
+        echo "✓ Policy headers verified"
         
         # Clean any previous build artifacts
         make distclean || true

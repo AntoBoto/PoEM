@@ -1,12 +1,12 @@
 [Desktop Entry]
-Name=BrrrFren Core
-Comment=Connect to the BrrrFren P2P Network
-Comment[de]=Verbinde mit dem BrrrFren peer-to-peer Netzwerk
-Comment[fr]=BrrrFren, monnaie virtuelle cryptographique pair à pair
-Comment[tr]=BrrrFren, eşten eşe kriptografik sanal para birimi
-Exec=dogecoin-qt %u
+Name=PoEM Wallet
+Comment=Connect to the PoEM (Poetry in Every Mind) Network
+Comment[de]=Verbinde mit dem PoEM (Poetry in Every Mind) Netzwerk
+Comment[fr]=PoEM (Poetry in Every Mind), monnaie virtuelle cryptographique pair à pair
+Comment[tr]=PoEM (Poetry in Every Mind), eşten eşe kriptografik sanal para birimi
+Exec=poem-qt %u
 Terminal=false
 Type=Application
-Icon=dogecoin128
-MimeType=x-scheme-handler/dogecoin;
+Icon=poem128
+MimeType=x-scheme-handler/poem;
 Categories=Office;Finance;

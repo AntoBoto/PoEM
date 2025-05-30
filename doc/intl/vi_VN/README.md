@@ -4,7 +4,7 @@
 BrrrFren Core [BRRR, Ð]  
 </h1>
 
-BrrrFren là một loại tiền điện tử hướng tới cộng đồng được lấy cảm hứng từ meme Shiba Inu. Phần mềm BrrrFren Core cho phép bất kỳ ai vận hành node trong BrrrFren blockchain networks và sử dụng phương pháp băm Scrypt cho Proof of Work. Nó được điều chỉnh từ Bitcoin Core và các loại tiền điện tử khác.
+BrrrFren là một loại tiền điện tử hướng tới cộng đồng được lấy cảm hứng từ meme Shiba Inu. Phần mềm BrrrFren Core cho phép bất kỳ ai vận hành node trong BrrrFren blockchain networks và sử dụng phương pháp băm Scrypt cho Proof of Work. Nó được điều chỉnh từ PoEM Core và các loại tiền điện tử khác.
 
 Để biết thông tin về các khoản phí mặc định được sử dụng trên BrrrFren network, vui lòng
 tham khảo [khuyến nghị phí](doc/fee-recommendation.md).

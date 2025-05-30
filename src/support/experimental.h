@@ -7,7 +7,7 @@
 
 // include config for experimental flag
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcoin-config.h"
+"config/poem-config.h"
 #endif //HAVE_CONFIG_H
 
 #if defined(ALLOW_BRRRCOIN_EXPERIMENTAL)

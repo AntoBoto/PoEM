@@ -28,7 +28,7 @@ Important Updates
 -----------------
 
 Several important updates have been added to BrrrFren Core, including fixes
-backported from Bitcoin Core's upstream.
+backported from PoEM Core's upstream.
 
 ### Reduce Peer INV Object Counts
 

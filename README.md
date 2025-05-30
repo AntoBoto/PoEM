@@ -1,25 +1,23 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/dogecoin/dogecoin/master/share/pixmaps/dogecoin256.svg" alt="BrrrFren" width="256"/>
+<img src="share/pixmaps/poem256.png" alt="PoEM" width="256"/>
 <br/><br/>
-BrrrFren Core [BRRR, Ð]  
+PoEM Core [POEM]  
 </h1>
 
-**IMPORTANT: Starting August 2024, the `master` branch has become the primary
-integration branch and has become unstable. Please check out a tagged version
-before compiling production binaries.**
+**IMPORTANT: This is the development branch of PoEM Core 2.0.0, which may be unstable. For production use, please check out a tagged release version.**
 
 For internationalized documentation, see the index at [doc/intl](doc/intl/README.md).
 
-BrrrFren is a community-driven cryptocurrency that was inspired by a Shiba Inu meme. The BrrrFren Core software allows anyone to operate a node in the BrrrFren blockchain networks and uses the Scrypt hashing method for Proof of Work. It is adapted from Bitcoin Core and other cryptocurrencies.
+PoEM (Proof of Engagement & Merit) is a community-driven cryptocurrency that rewards users for their engagement and contributions to the network. The PoEM Core software allows anyone to operate a node in the PoEM blockchain network and uses the Scrypt hashing method for Proof of Work.
 
 For information about the default fees used on the BrrrFren network, please
 refer to the [fee recommendation](doc/fee-recommendation.md).
 
 ## Usage 💻
 
-To start your journey with BrrrFren Core, see the [installation guide](INSTALL.md) and the [getting started](doc/getting-started.md) tutorial.
+To start your journey with PoEM Core, see the [installation guide](INSTALL.md) and the [getting started](doc/getting-started.md) tutorial.
 
-The JSON-RPC API provided by BrrrFren Core is self-documenting and can be browsed with `dogecoin-cli help`, while detailed information for each command can be viewed with `dogecoin-cli help <command>`.
+The JSON-RPC API provided by PoEM Core is self-documenting and can be browsed with `poem-cli help`, while detailed information for each command can be viewed with `poem-cli help <command>`.
 
 ### Such ports
 

@@ -1,0 +1,265 @@
+name: Build BrrrFren Wallets
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Cache Linux dependencies
+      if: matrix.os == 'ubuntu-22.04'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/apt
+          ~/.local/share/vcpkg
+        key: ${{ matrix.os }}-deps-${{ hashFiles('**/configure.ac') }}
+        restore-keys: |
+          ${{ matrix.os }}-deps-
+
+    - name: Install dependencies (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential libtool autotools-dev automake pkg-config \
+          libevent-dev libssl-dev \
+          libboost-system-dev libboost-filesystem-dev libboost-thread-dev libboost-chrono-dev \
+          libboost-iostreams-dev libboost-program-options-dev libboost-test-dev \
+          qtbase5-dev qttools5-dev-tools protobuf-compiler \
+          libqrencode-dev libminiupnpc-dev libdb++-dev
+
+    - name: Install dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          git
+          base-devel
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-autotools
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-boost
+          mingw-w64-x86_64-boost-libs
+          mingw-w64-x86_64-libevent
+          mingw-w64-x86_64-db
+          mingw-w64-x86_64-openssl
+          mingw-w64-x86_64-qt5-base
+          mingw-w64-x86_64-qt5-tools
+          mingw-w64-x86_64-protobuf
+          mingw-w64-x86_64-qrencode
+          mingw-w64-x86_64-miniupnpc
+
+    - name: Build BrrrFren (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        ./autogen.sh
+        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=no
+        make -j$(nproc)
+        
+        # 🔍 Debug: Check what binaries were actually created
+        echo "=== Checking what binaries exist in src/ ==="
+        ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|brrrfren)"
+        
+        # 🎯 Use actual binary names (probably dogecoin* not brrrfren*)
+        if [ -f src/dogecoind ]; then
+          strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
+          mkdir -p dist
+          cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
+        elif [ -f src/brrrfrend ]; then
+          strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
+          mkdir -p dist
+          cp src/brrrfrend src/brrrfren-cli src/brrrfren-tx dist/
+        else
+          echo "ERROR: Could not find expected binaries!"
+          ls -la src/
+          exit 1
+        fi
+
+    - name: Build BrrrFren (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: msys2 {0}
+      run: |
+        ./autogen.sh
+        
+        # Work around MSYS2 missing libboost_system-mt.a issue
+        echo "Working around missing libboost_system-mt.a in MSYS2..."
+        if [ ! -f /mingw64/lib/libboost_system-mt.a ]; then
+          echo "Creating dummy libboost_system-mt.a (header-only in boost 1.88)"
+          ar crs /mingw64/lib/libboost_system-mt.a
+        fi
+        
+        # Set boost environment variables
+        export BOOST_ROOT=/mingw64
+        export BOOST_INCLUDEDIR=/mingw64/include
+        export BOOST_LIBRARYDIR=/mingw64/lib
+        export BOOST_SYSTEM_LIB=boost_system-mt
+        export BOOST_FILESYSTEM_LIB=boost_filesystem-mt
+        export BOOST_THREAD_LIB=boost_thread-mt
+        export BOOST_CHRONO_LIB=boost_chrono-mt
+        export BOOST_PROGRAM_OPTIONS_LIB=boost_program_options-mt
+        export BOOST_UNIT_TEST_FRAMEWORK_LIB=boost_unit_test_framework-mt
+        
+        # Force configure to accept that boost_system is available
+        export ax_cv_boost_system=yes
+        
+        # 🎯 FIX: Force C++17 + disable tests + add missing Windows libs
+        export CXXFLAGS="-g -O2 -std=c++17"
+        export LDFLAGS="-lbcrypt"
+        
+        ./configure \
+          CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
+          LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
+          CXXFLAGS="${CXXFLAGS}" \
+          --enable-static --disable-shared --with-pic \
+          --with-incompatible-bdb --with-qt=no \
+          --disable-tests --disable-bench \
+          --with-boost="${BOOST_ROOT}"
+          
+        make -j$(nproc)
+        
+        # 🔍 Debug: Check what binaries were actually created
+        echo "=== Checking what binaries exist in src/ ==="
+        ls -la src/ | grep -E "\.exe$"
+        
+        # 🎯 Use actual binary names - same logic as Linux
+        if [ -f src/dogecoind.exe ]; then
+          strip src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe
+          mkdir -p dist
+          cp src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe dist/
+        elif [ -f src/brrrfrend.exe ]; then
+          strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
+          mkdir -p dist
+          cp src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe dist/
+        else
+          echo "ERROR: Could not find expected binaries!"
+          ls -la src/
+          exit 1
+        fi
+        
+        # Copy ALL required DLLs for Windows using a more reliable approach
+        echo "Finding and copying all required DLLs..."
+        
+        # Get the main executable to work with
+        MAIN_EXE=""
+        if [ -f src/dogecoind.exe ]; then
+          MAIN_EXE="src/dogecoind.exe"
+        elif [ -f src/brrrfrend.exe ]; then
+          MAIN_EXE="src/brrrfrend.exe"
+        else
+          echo "Could not find main executable"
+          exit 1
+        fi
+        
+        # First, ensure we have the ldd-equivalent tool for Windows
+        pacman -S --noconfirm mingw-w64-x86_64-ntldd-git || echo "ntldd already installed"
+        
+        # Create a script to find and copy all dependencies
+        cat > copy_deps.sh << 'EOF'
+        #!/bin/bash
+        
+        # Function to copy a DLL and its dependencies recursively
+        function copy_dll_and_deps() {
+          local dll="$1"
+          local dest="$2"
+          local dll_basename=$(basename "$dll")
+          
+          # If we've already processed this DLL, skip it
+          if [[ -f "$dest/$dll_basename" ]]; then
+            return
+          fi
+          
+          echo "Copying $dll_basename"
+          cp "$dll" "$dest/"
+          
+          # Find dependencies
+          ntldd "$dll" | grep -i "mingw" | sed -n 's/.*=> \(.*\) .*/\1/p' | while read dep; do
+            if [[ -f "$dep" && "$dep" != "$dll" ]]; then
+              copy_dll_and_deps "$dep" "$dest"
+            fi
+          done
+        }
+        
+        # Main executable to process
+        MAIN_EXE="$1"
+        DEST_DIR="$2"
+        
+        # First copy MSYS2 core DLLs that might be missed
+        for lib in libwinpthread-1.dll libstdc++-6.dll libgcc_s_seh-1.dll; do
+          cp "/mingw64/bin/$lib" "$DEST_DIR/" 2>/dev/null || echo "Warning: Could not find $lib"
+        done
+        
+        # Handle Berkeley DB specifically as it might not be picked up
+        cp /mingw64/bin/libdb*.dll "$DEST_DIR/" 2>/dev/null || echo "Warning: Could not find Berkeley DB DLLs"
+        
+        # Copy all dependencies
+        copy_dll_and_deps "$MAIN_EXE" "$DEST_DIR"
+        
+        # Also process CLI and TX executables
+        if [[ "$MAIN_EXE" == *"dogecoind.exe" ]]; then
+          copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-cli.exe}" "$DEST_DIR"
+          copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-tx.exe}" "$DEST_DIR"
+        elif [[ "$MAIN_EXE" == *"brrrfrend.exe" ]]; then
+          copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-cli.exe}" "$DEST_DIR"
+          copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-tx.exe}" "$DEST_DIR"
+        fi
+        
+        echo "All dependencies copied to $DEST_DIR"
+        EOF
+        
+        chmod +x copy_deps.sh
+        ./copy_deps.sh "$MAIN_EXE" "dist"
+        
+        # List all DLLs that were copied
+        echo "=== DLLs included in package ==="
+        ls -la dist/*.dll
+
+    - name: Package binaries
+      run: |
+        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
+          cd dist
+          tar -czf ../brrrfren-linux-x64.tar.gz *
+          cd ..
+          echo "ASSET_NAME=brrrfren-linux-x64.tar.gz" >> $GITHUB_ENV
+        else
+          cd dist
+          7z a ../brrrfren-windows-x64.zip *
+          cd ..
+          echo "ASSET_NAME=brrrfren-windows-x64.zip" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Generate checksums
+      run: |
+        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
+          sha256sum brrrfren-linux-x64.tar.gz > brrrfren-linux-x64.tar.gz.sha256
+        else
+          sha256sum brrrfren-windows-x64.zip > brrrfren-windows-x64.zip.sha256
+        fi
+      shell: bash
+
+    - name: Upload binaries to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ${{ env.ASSET_NAME }}
+          ${{ env.ASSET_NAME }}.sha256
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

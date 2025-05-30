@@ -46,7 +46,7 @@ mkdir outputs
 AFLOUT=$PWD/outputs
 ```
 
-Example inputs for Bitcoin Core are available from:
+Example inputs for PoEM Core are available from:
 
 - https://download.visucore.com/bitcoin/bitcoin_fuzzy_in.tar.xz
 - http://strateman.ninja/fuzzing.tar.xz

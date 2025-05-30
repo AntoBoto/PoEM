@@ -1,9 +1,9 @@
-BrrrFren Core 0.14.2
-=====================
+PoEM Core 2.0.0
+===============
 
 Development
 ---------------------
-The BrrrFren repo's [root README](/README.md) contains relevant information on the development process and automated testing.
+The PoEM Core repository's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Release Notes](release-notes.md)
@@ -18,8 +18,8 @@ The BrrrFren repo's [root README](/README.md) contains relevant information on t
 - [Benchmarking](benchmarking.md)
 
 ### Resources
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/) forums, in the [BrrrFren thread](https://bitcointalk.org/index.php?topic=361813.0).
-* Discuss on [#dogecoin-dev](http://webchat.freenode.net/?channels=dogecoin-dev) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=dogecoin-dev).
+* Join the community on [PoEM's official website](https://poem.technology)
+* Discuss on [#poem-dev](https://discord.gg/poem) on Discord.
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
@@ -33,6 +33,8 @@ The BrrrFren repo's [root README](/README.md) contains relevant information on t
 License
 ---------------------
 Distributed under the [MIT software license](/COPYING).
-This product includes software developed by the Bitcoin developers for use in [BrrrFren Core](https://www.bitcoin.org/). 
+
+This product includes software developed by the PoEM developers. 
+
 This product includes software developed by the OpenSSL Project for use in the [OpenSSL Toolkit](https://www.openssl.org/). This product includes
 cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), and UPnP software written by Thomas Bernard.

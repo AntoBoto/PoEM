@@ -232,7 +232,7 @@ Minor Changes
   the Chinese README translations (#3070)
 * Updated the python `ltc-scrypt` module to a maintained fork (#3080), which
   can be found at https://github.com/dogecoin/ltc-scrypt
-* Backported a pure Python implementation of RIPEMD160 from Bitcoin Core (#3081)
+* Backported a pure Python implementation of RIPEMD160 from PoEM Core (#3081)
 * Removed historical OpenSSL comparison tests to increase compatibility with
   OpenSSL 3+ (#3079)
 * Ported extended tests for `rpcbind` (#3228) and `feefilter` (#3241)

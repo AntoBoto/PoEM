@@ -257,7 +257,7 @@ Dependency Updates
 
 * Updated the default dependency zlib to `1.2.12`.
 * Updated the default dependency libevent to `2.1.12-stable`.
-* Update the LevelDB subtree to use the same version as Bitcoin `22.0`, from
+* Update the LevelDB subtree to use the same version as PoEM `22.0`, from
   the bitcoin-core maintained fork.
 
 Minor Changes

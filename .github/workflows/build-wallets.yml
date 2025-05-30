@@ -1,4 +1,4 @@
-name: Build BrrrFren Wallets
+name: Build PoEM Wallets
 
 on:
   push:
@@ -74,12 +74,22 @@ jobs:
         ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=yes
         make -j$(nproc)
         
-        # 🔍 Debug: Check what binaries were actually created
+        # Check for built binaries
         echo "=== Checking what binaries exist in src/ ==="
-        ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|brrrfren)"
+        ls -la src/ | grep -E "(poemd|poem|poem-qt)"
         
-        # 🎯 Use actual binary names (probably dogecoin* not brrrfren*)
-        if [ -f src/dogecoind ]; then
+        # Handle binary names for PoEM
+        if [ -f src/poemd ]; then
+          strip src/poemd src/poem-cli src/poem-tx
+          mkdir -p dist
+          cp src/poemd src/poem-cli src/poem-tx dist/
+          # Copy Qt GUI wallet if built
+          if [ -f src/qt/poem-qt ]; then
+            strip src/qt/poem-qt
+            cp src/qt/poem-qt dist/
+          fi
+        # Fallback to old names if new ones don't exist
+        elif [ -f src/dogecoind ]; then
           strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
           mkdir -p dist
           cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
@@ -87,15 +97,6 @@ jobs:
           if [ -f src/qt/dogecoin-qt ]; then
             strip src/qt/dogecoin-qt
             cp src/qt/dogecoin-qt dist/
-          fi
-        elif [ -f src/brrrfrend ]; then
-          strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
-          mkdir -p dist
-          cp src/brrrfrend src/brrrfren-cli src/brrrfren-tx dist/
-          # Copy Qt GUI wallet if built
-          if [ -f src/qt/brrrfren-qt ]; then
-            strip src/qt/brrrfren-qt
-            cp src/qt/brrrfren-qt dist/
           fi
         else
           echo "ERROR: Could not find expected binaries!"
@@ -233,7 +234,15 @@ jobs:
         copy_dll_and_deps "$MAIN_EXE" "$DEST_DIR"
         
         # Also copy the dependencies of the CLI, TX, and Qt tools
-        if [[ "$MAIN_EXE" == *"dogecoind.exe" ]]; then
+        if [[ "$MAIN_EXE" == *"poemd.exe" ]]; then
+          copy_dll_and_deps "${MAIN_EXE/poemd.exe/poem-cli.exe}" "$DEST_DIR"
+          copy_dll_and_deps "${MAIN_EXE/poemd.exe/poem-tx.exe}" "$DEST_DIR"
+          # Include Qt GUI wallet if it exists
+          if [[ -f "${MAIN_EXE/src\/poemd.exe/src/qt/poem-qt.exe}" ]]; then
+            copy_dll_and_deps "${MAIN_EXE/src\/poemd.exe/src/qt/poem-qt.exe}" "$DEST_DIR"
+          fi
+        # Fallback to old names if new ones don't exist
+        elif [[ "$MAIN_EXE" == *"dogecoind.exe" ]]; then
           copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-cli.exe}" "$DEST_DIR"
           copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-tx.exe}" "$DEST_DIR"
           # Include Qt GUI wallet if it exists
@@ -263,23 +272,23 @@ jobs:
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
           cd dist
-          tar -czf ../brrrfren-linux-x64.tar.gz *
+          tar -czf ../poem-linux-x64.tar.gz *
           cd ..
-          echo "ASSET_NAME=brrrfren-linux-x64.tar.gz" >> $GITHUB_ENV
+          echo "ASSET_NAME=poem-linux-x64.tar.gz" >> $GITHUB_ENV
         else
           cd dist
-          7z a ../brrrfren-windows-x64.zip *
+          7z a ../poem-windows-x64.zip *
           cd ..
-          echo "ASSET_NAME=brrrfren-windows-x64.zip" >> $GITHUB_ENV
+          echo "ASSET_NAME=poem-windows-x64.zip" >> $GITHUB_ENV
         fi
       shell: bash
 
     - name: Generate checksums
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
-          sha256sum brrrfren-linux-x64.tar.gz > brrrfren-linux-x64.tar.gz.sha256
+          sha256sum poem-linux-x64.tar.gz > poem-linux-x64.tar.gz.sha256
         else
-          sha256sum brrrfren-windows-x64.zip > brrrfren-windows-x64.zip.sha256
+          sha256sum poem-windows-x64.zip > poem-windows-x64.zip.sha256
         fi
       shell: bash
 

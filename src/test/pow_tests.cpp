@@ -1,5 +1,5 @@
-// Copyright (c) 2015 The Bitcoin Core developers
-// Copyright (c) 2018-2022 The BrrrFren Core developers
+// Copyright (c) 2015 The PoEM Core developers
+// Copyright (c) 2018-2022 The PoEM Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +8,7 @@
 #include "pow.h"
 #include "random.h"
 #include "util.h"
-#include "test/test_bitcoin.h"
+#include "test/test_poem.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -51,13 +51,13 @@ BOOST_AUTO_TEST_CASE(get_next_work_lower_limit_actual)
     int64_t nLastRetargetTime = 1279008237; // Block #66528
     CBlockIndex pindexLast;
     pindexLast.nHeight = 66767;
-    pindexLast.nTime = 1279008237 + (239 * 60 / 4 - 1); // Bitcoin Block #66528 + less than a quarter of the target timespan
+    pindexLast.nTime = 1279008237 + (239 * 60 / 4 - 1); // PoEM Block #66528 + less than a quarter of the target timespan
     pindexLast.nBits = 0x1c05a3f4;
     BOOST_CHECK_EQUAL(CalculateNextWorkRequired(&pindexLast, nLastRetargetTime, params), 0x1c0168fd);
 }
 
 /* Test the constraint on the upper bound for actual time taken */
-// Replaced by BrrrFren-specific PoW test
+// Replaced by PoEM-specific PoW test
 /* BOOST_AUTO_TEST_CASE(get_next_work_upper_limit_actual)
 {
     SelectParams(CBaseChainParams::MAIN);

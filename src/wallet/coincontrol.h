@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2016 The PoEM Core developers
 // Copyright (c) 2021-2022 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -7,7 +7,7 @@
 #define BITCOIN_WALLET_COINCONTROL_H
 
 #include "primitives/transaction.h"
-#include "dogecoin-fees.h"
+#include "poem-fees.h"
 
 /** Coin Control Features. */
 class CCoinControl

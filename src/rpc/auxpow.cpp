@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2009-2014 The PoEM Core developers
 // Copyright (c) 2011 Vince Durham
 // Copyright (c) 2014-2016 Daniel Kraft
 // Copyright (c) 2021-2025 The BrrrFren Core developers
@@ -77,7 +77,7 @@ static UniValue AuxMiningCreateBlock(const CScript& scriptPubKey)
 
     /* Search for cached blocks with given scriptPubKey and assign it to pBlock
      * if we find a match. This allows for creating multiple aux templates with
-     * a single dogecoind instance, for example when a pool runs multiple sub-
+     * a single poemd instance, for example when a pool runs multiple sub-
      * pools with different payout strategies.
      */
     CBlock* pblock = nullptr;
@@ -356,7 +356,7 @@ UniValue createauxblock(const JSONRPCRequest& request)
             );
 
     // Check coinbase payout address
-    CBitcoinAddress coinbaseAddress(request.params[0].get_str());
+    CPoEMAddress coinbaseAddress(request.params[0].get_str());
 
     if (!coinbaseAddress.IsValid())
         throw JSONRPCError(RPC_INVALID_PARAMETER,"Invalid coinbase payout address");

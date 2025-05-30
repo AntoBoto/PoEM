@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2016 The PoEM Core developers
 // Copyright (c) 2022-2023 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -13,8 +13,8 @@
 #include "consensus/consensus.h"
 #include "consensus/merkle.h"
 #include "consensus/validation.h"
-#include "dogecoin.h"
-#include "dogecoin-fees.h"
+#include "poem.h"
+#include "poem-fees.h"
 #include "fs.h"
 #include "hash.h"
 #include "init.h"
@@ -1722,7 +1722,7 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck() {
-    RenameThread("dogecoin-scriptch");
+    RenameThread("poem-scriptch");
     scriptcheckqueue.Thread();
 }
 

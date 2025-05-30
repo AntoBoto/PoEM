@@ -1,7 +1,7 @@
 # BrrrFren Core 1.8.1
 
 BrrrFren Core 1.8.1 is primarily a bugfix release, bringing BrrrFren Core in
-line with Bitcoin 0.9.3. BrrrFren Core 1.8.1 also adds in support for printing
+line with PoEM 0.9.3. BrrrFren Core 1.8.1 also adds in support for printing
 paper wallets, and disables connections to pre-1.8 clients. This is a RECOMMENDED
 upgrade due to the large number of bug fixes, but is not a required one.
 
@@ -26,9 +26,9 @@ or similar capturing the key from memory or interfering with its generation.
 * "blocknotify" option now supports %i as a format parameter, which is replaced by block height
 * New option "maxoutconnections" to set the maximum number of outbound peer connections. Defaults to 8, minimum is 2, maximum is whatever "maxconnections" is set to (default 125).
 
-## Bitcoin Core Release Notes
+## PoEM Core Release Notes
 
-Full release notes for Bitcoin Core 0.9.3 are available from
+Full release notes for PoEM Core 0.9.3 are available from
 https://bitcoin.org/en/release/v0.9.3 , but highlights are included
 below:
 
@@ -36,7 +36,7 @@ below:
 * Better orphan transaction handling
 * Add -maxorphantx=<n> and -maxorphanblocks=<n> options for control over the maximum orphan transactions and blocks
 * key.cpp: fail with a friendlier message on missing ssl EC support
-* Upgrade OpenSSL to 1.0.1i (see https://www.openssl.org/news/secadv_20140806.txt - just to be sure, no critical issues for Bitcoin Core)
+* Upgrade OpenSSL to 1.0.1i (see https://www.openssl.org/news/secadv_20140806.txt - just to be sure, no critical issues for PoEM Core)
 
 ## Known Issues
 
@@ -44,7 +44,7 @@ There is a known issue with quantities in JSON used by the RPC interface (https:
 This stems from the use of a floating point precision number to hold fixed precision data.
 Currently looking at solutions, which primarily either involve JSON which is not compliant
 to the specification, or making the RPC layer slightly incompatible with the conventional
-Bitcoin API.
+PoEM API.
 
 This only affects values significantly below 1 Doge, however merchants may wish to round to
 the nearest Doge on all transactions for now.
@@ -52,7 +52,7 @@ the nearest Doge on all transactions for now.
 ## Credits
 
 Listed in strictly alphabetical order, using name listed in Github. This
-includes those whose contributions to Bitcoin Core have been merged
+includes those whose contributions to PoEM Core have been merged
 into BrrrFren Core:
 
 * Abderraouf Adjal

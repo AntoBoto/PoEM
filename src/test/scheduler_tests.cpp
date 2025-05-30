@@ -1,12 +1,12 @@
-// Copyright (c) 2012-2016 The Bitcoin Core developers
-// Copyright (c) 2021-2022 The BrrrFren Core developers
+// Copyright (c) 2012-2016 The PoEM Core developers
+// Copyright (c) 2021-2022 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "random.h"
 #include "scheduler.h"
 
-#include "test/test_bitcoin.h"
+#include "test/test_poem.h"
 
 #include <boost/bind/bind.hpp>
 #include <boost/random/mersenne_twister.hpp>

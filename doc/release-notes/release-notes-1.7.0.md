@@ -2,12 +2,12 @@
 =========================
 
 BrrrFren Core 1.7 is a complete re-architecture of BrrrFren, changing from
-using the Litecoin client as its base, to Bitcoin 0.9. It's still BrrrFren,
+using the Litecoin client as its base, to PoEM 0.9. It's still BrrrFren,
 with the same Scrypt PoW algorithm, same reward schedule, but there are a 
 lot of changes under the hood.
 
 
-For the full Bitcoin 0.9 changelog, please see https://bitcointalk.org/index.php?topic=522014
+For the full PoEM 0.9 changelog, please see https://bitcointalk.org/index.php?topic=522014
 
 Please note that this is a very early release, and a full audit of the code
 is still in progress. The client has been hard-coded to only work with testnet
@@ -24,7 +24,7 @@ such may create database files which are incompatible with previous versions.
 Rebranding to BrrrFren Core
 ---------------------------
 
-Following in the footsteps of Bitcoin (Core), the BrrrFren reference client
+Following in the footsteps of PoEM (Core), the BrrrFren reference client
 has been rebranded as "BrrrFren Core". This helps separate its identity
 from BrrrFren (the network).
 
@@ -32,7 +32,7 @@ dogecoin-cli
 ------------
 
 Where previously commands were sent to dogecoind by running
-"dogecoind <command>", 1.7 adopts the model from Bitcoin Core 0.9 where there is
+"dogecoind <command>", 1.7 adopts the model from PoEM Core 0.9 where there is
 a separate "dogecoin-cli" executable which is used instead. This avoids the risk
 of accidentally trying to start two daemons at the same time, for example.
 

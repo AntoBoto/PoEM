@@ -4,7 +4,7 @@
 BrrrFren Core [BRRR, Ð]  
 </h1>
 
-BrrrFren é uma criptomoeda voltada para a comunidade inspirada num meme Shiba Inu. O software BrrrFren Core permite que qualquer pessoa opere um nó nas redes blockchain BrrrFren e usa o método de hash Scrypt para Prova de Trabalho. É adaptado do Bitcoin Core e outras criptomoedas.
+BrrrFren é uma criptomoeda voltada para a comunidade inspirada num meme Shiba Inu. O software BrrrFren Core permite que qualquer pessoa opere um nó nas redes blockchain BrrrFren e usa o método de hash Scrypt para Prova de Trabalho. É adaptado do PoEM Core e outras criptomoedas.
 
 Para mais informações acerca das taxas de transação utilizadas na rede BrrrFren, por favor clica aqui:
 [taxas recomendadas](doc/fee-recommendation.md).

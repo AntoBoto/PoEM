@@ -1,10 +1,10 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2016 The PoEM Core developers
 // Copyright (c) 2021-2023 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcoin-config.h"
+"config/poem-config.h"
 #endif
 
 #include "bitcoingui.h"
@@ -83,7 +83,7 @@ static void InitMessage(const std::string &message)
  */
 static std::string Translate(const char* psz)
 {
-    return QCoreApplication::translate("bitcoin-core", psz).toStdString();
+    return QCoreApplication::translate("poem-core", psz).toStdString();
 }
 
 static QString GetLangTerritory()
@@ -147,14 +147,14 @@ void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, cons
     LogPrint(category, "GUI: %s\n", msg.toStdString());
 }
 
-/** Class encapsulating Bitcoin Core startup and shutdown.
+/** Class encapsulating PoEM Core startup and shutdown.
  * Allows running startup and shutdown in a different thread from the UI thread.
  */
-class BitcoinCore: public QObject
+class PoEMCore: public QObject
 {
     Q_OBJECT
 public:
-    explicit BitcoinCore();
+    explicit PoEMCore();
 
 public Q_SLOTS:
     void initialize();
@@ -173,13 +173,13 @@ private:
     void handleRunawayException(const std::exception *e);
 };
 
-/** Main Bitcoin application object */
-class BitcoinApplication: public QApplication
+/** Main PoEM application object */
+class PoEMApplication: public QApplication
 {
     Q_OBJECT
 public:
-    explicit BitcoinApplication();
-    ~BitcoinApplication();
+    explicit PoEMApplication();
+    ~PoEMApplication();
 
 #ifdef ENABLE_WALLET
     /// Create payment server
@@ -202,7 +202,7 @@ public:
     /// Get process return value
     int getReturnValue() { return returnValue; }
 
-    /// Get window identifier of QMainWindow (BitcoinGUI)
+    /// Get window identifier of QMainWindow (PoEMGUI)
     WId getMainWinId() const;
 
 public Q_SLOTS:
@@ -221,7 +221,7 @@ private:
     QThread *coreThread;
     OptionsModel *optionsModel;
     ClientModel *clientModel;
-    BitcoinGUI *window;
+    PoEMGUI *window;
     QTimer *pollShutdownTimer;
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer;
@@ -236,18 +236,18 @@ private:
 
 #include "bitcoin.moc"
 
-BitcoinCore::BitcoinCore():
+PoEMCore::PoEMCore():
     QObject()
 {
 }
 
-void BitcoinCore::handleRunawayException(const std::exception *e)
+void PoEMCore::handleRunawayException(const std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
     Q_EMIT runawayException(QString::fromStdString(GetWarnings("gui")));
 }
 
-void BitcoinCore::initialize()
+void PoEMCore::initialize()
 {
     try
     {
@@ -276,7 +276,7 @@ void BitcoinCore::initialize()
     }
 }
 
-void BitcoinCore::shutdown()
+void PoEMCore::shutdown()
 {
     try
     {
@@ -294,9 +294,9 @@ void BitcoinCore::shutdown()
 }
 
 static int qt_argc = 1;
-static const char* qt_argv = "dogecoin-qt";
+static const char* qt_argv = "poem-qt";
 
-BitcoinApplication::BitcoinApplication():
+PoEMApplication::PoEMApplication():
     QApplication(qt_argc, const_cast<char **>(&qt_argv)),
     coreThread(0),
     optionsModel(0),
@@ -312,17 +312,17 @@ BitcoinApplication::BitcoinApplication():
     setQuitOnLastWindowClosed(false);
 
     // UI per-platform customization
-    // This must be done inside the BitcoinApplication constructor, or after it, because
+    // This must be done inside the PoEMApplication constructor, or after it, because
     // PlatformStyle::instantiate requires a QApplication
     std::string platformName;
-    platformName = GetArg("-uiplatform", BitcoinGUI::DEFAULT_UIPLATFORM);
+    platformName = GetArg("-uiplatform", PoEMGUI::DEFAULT_UIPLATFORM);
     platformStyle = PlatformStyle::instantiate(QString::fromStdString(platformName));
     if (!platformStyle) // Fall back to "other" if specified name not found
         platformStyle = PlatformStyle::instantiate("other");
     assert(platformStyle);
 }
 
-BitcoinApplication::~BitcoinApplication()
+PoEMApplication::~PoEMApplication()
 {
     if(coreThread)
     {
@@ -345,27 +345,27 @@ BitcoinApplication::~BitcoinApplication()
 }
 
 #ifdef ENABLE_WALLET
-void BitcoinApplication::createPaymentServer()
+void PoEMApplication::createPaymentServer()
 {
     paymentServer = new PaymentServer(this, true);
 }
 #endif
 
-void BitcoinApplication::createOptionsModel(bool resetSettings)
+void PoEMApplication::createOptionsModel(bool resetSettings)
 {
     optionsModel = new OptionsModel(NULL, resetSettings);
 }
 
-void BitcoinApplication::createWindow(const NetworkStyle *networkStyle)
+void PoEMApplication::createWindow(const NetworkStyle *networkStyle)
 {
-    window = new BitcoinGUI(platformStyle, networkStyle, 0);
+    window = new PoEMGUI(platformStyle, networkStyle, 0);
 
     pollShutdownTimer = new QTimer(window);
     connect(pollShutdownTimer, SIGNAL(timeout()), window, SLOT(detectShutdown()));
     pollShutdownTimer->start(200);
 }
 
-void BitcoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
+void PoEMApplication::createSplashScreen(const NetworkStyle *networkStyle)
 {
     SplashScreen *splash = new SplashScreen(0, networkStyle);
     // We don't hold a direct pointer to the splash screen after creation, but the splash
@@ -375,12 +375,12 @@ void BitcoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
     connect(this, SIGNAL(requestedShutdown()), splash, SLOT(close()));
 }
 
-void BitcoinApplication::startThread()
+void PoEMApplication::startThread()
 {
     if(coreThread)
         return;
     coreThread = new QThread(this);
-    BitcoinCore *executor = new BitcoinCore();
+    PoEMCore *executor = new PoEMCore();
     executor->moveToThread(coreThread);
 
     /*  communication to and from thread */
@@ -396,20 +396,20 @@ void BitcoinApplication::startThread()
     coreThread->start();
 }
 
-void BitcoinApplication::parameterSetup()
+void PoEMApplication::parameterSetup()
 {
     InitLogging();
     InitParameterInteraction();
 }
 
-void BitcoinApplication::requestInitialize()
+void PoEMApplication::requestInitialize()
 {
     qDebug() << __func__ << ": Requesting initialize";
     startThread();
     Q_EMIT requestedInitialize();
 }
 
-void BitcoinApplication::requestShutdown()
+void PoEMApplication::requestShutdown()
 {
     // Show a simple window indicating shutdown status
     // Do this first as some of the steps may take some time below,
@@ -436,7 +436,7 @@ void BitcoinApplication::requestShutdown()
     Q_EMIT requestedShutdown();
 }
 
-void BitcoinApplication::initializeResult(int retval)
+void PoEMApplication::initializeResult(int retval)
 {
     qDebug() << __func__ << ": Initialization result: " << retval;
     // Set exit result: 0 if successful, 1 if failure
@@ -454,8 +454,8 @@ void BitcoinApplication::initializeResult(int retval)
         {
             walletModel = new WalletModel(platformStyle, pwalletMain, optionsModel);
 
-            window->addWallet(BitcoinGUI::DEFAULT_WALLET, walletModel);
-            window->setCurrentWallet(BitcoinGUI::DEFAULT_WALLET);
+            window->addWallet(PoEMGUI::DEFAULT_WALLET, walletModel);
+            window->setCurrentWallet(PoEMGUI::DEFAULT_WALLET);
         }
 #endif
 
@@ -477,7 +477,7 @@ void BitcoinApplication::initializeResult(int retval)
         // payment requests:
         connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)),
                           window, SLOT(handlePaymentRequest(SendCoinsRecipient)));
-        // Now that initialization/startup is done, process any command-line bitcoin: URIs
+        // Now that initialization/startup is done, process any command-line poem: URIs
         connect(window, SIGNAL(receivedURI(QString)),
                          paymentServer, SLOT(handleURIOrFile(QString)));
         connect(paymentServer, SIGNAL(message(QString,QString,unsigned int)),
@@ -489,19 +489,19 @@ void BitcoinApplication::initializeResult(int retval)
     }
 }
 
-void BitcoinApplication::shutdownResult(int retval)
+void PoEMApplication::shutdownResult(int retval)
 {
     qDebug() << __func__ << ": Shutdown result: " << retval;
     quit(); // Exit main loop after shutdown finished
 }
 
-void BitcoinApplication::handleRunawayException(const QString &message)
+void PoEMApplication::handleRunawayException(const QString &message)
 {
-    QMessageBox::critical(0, BitcoinGUI::tr("Runaway exception"), BitcoinGUI::tr("A fatal error occurred. BrrrFren can no longer continue safely and will quit.") + QString("\n\n") + message);
+    QMessageBox::critical(0, PoEMGUI::tr("Runaway exception"), PoEMGUI::tr("A fatal error occurred. BrrrFren can no longer continue safely and will quit.") + QString("\n\n") + message);
     ::exit(EXIT_FAILURE);
 }
 
-WId BitcoinApplication::getMainWinId() const
+WId PoEMApplication::getMainWinId() const
 {
     if (!window)
         return 0;
@@ -535,7 +535,7 @@ MAIN_FUNCTION
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
 #endif
 
-    BitcoinApplication app;
+    PoEMApplication app;
 
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
@@ -571,7 +571,7 @@ MAIN_FUNCTION
     if (!Intro::pickDataDirectory())
         return EXIT_SUCCESS;
 
-    /// 6. Determine availability of data directory and parse bitcoin.conf
+    /// 6. Determine availability of data directory and parse poem.conf
     /// - Do not call GetDataDir(true) before this step finishes
     if (!fs::is_directory(GetDataDir(false)))
     {
@@ -623,7 +623,7 @@ MAIN_FUNCTION
         exit(EXIT_SUCCESS);
 
     // Start up the payment server early, too, so impatient users that click on
-    // bitcoin: links repeatedly have their payment requests routed to this process:
+    // poem: links repeatedly have their payment requests routed to this process:
     app.createPaymentServer();
 #endif
 

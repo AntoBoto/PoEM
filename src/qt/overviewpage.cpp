@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2016 The PoEM Core developers
 // Copyright (c) 2022 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -28,7 +28,7 @@ class TxViewDelegate : public QAbstractItemDelegate
     Q_OBJECT
 public:
     TxViewDelegate(const PlatformStyle *_platformStyle, QObject *parent=nullptr):
-        QAbstractItemDelegate(parent), unit(BitcoinUnits::BTC),
+        QAbstractItemDelegate(parent), unit(PoEMUnits::BTC),
         platformStyle(_platformStyle)
     {
 
@@ -86,7 +86,7 @@ public:
             foreground = option.palette.color(QPalette::Text);
         }
         painter->setPen(foreground);
-        QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true, BitcoinUnits::separatorAlways);
+        QString amountText = PoEMUnits::formatWithUnit(unit, amount, true, PoEMUnits::separatorAlways);
         if(!confirmed)
         {
             amountText = QString("[") + amountText + QString("]");
@@ -163,7 +163,7 @@ void OverviewPage::UpdateTip()
         tr("Never share your private key with anyone"),
         tr("Who owns the private keys, owns the coins"),
         tr("To see ongoing development and contribute, check out the BrrrFren Core repository on GitHub"),
-        tr("Services that claim to double your dogecoins are always ponzi schemes")
+        tr("Services that claim to double your PoEM are always ponzi schemes")
     };
 
     int i = rand() % tips.length();
@@ -195,14 +195,14 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     currentWatchOnlyBalance = watchOnlyBalance;
     currentWatchUnconfBalance = watchUnconfBalance;
     currentWatchImmatureBalance = watchImmatureBalance;
-    ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance, false, BitcoinUnits::separatorAlways));
-    ui->labelUnconfirmed->setText(BitcoinUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelImmature->setText(BitcoinUnits::formatWithUnit(unit, immatureBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelTotal->setText(BitcoinUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelWatchAvailable->setText(BitcoinUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelWatchPending->setText(BitcoinUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelWatchImmature->setText(BitcoinUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelWatchTotal->setText(BitcoinUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcoinUnits::separatorAlways));
+    ui->labelBalance->setText(PoEMUnits::formatWithUnit(unit, balance, false, PoEMUnits::separatorAlways));
+    ui->labelUnconfirmed->setText(PoEMUnits::formatWithUnit(unit, unconfirmedBalance, false, PoEMUnits::separatorAlways));
+    ui->labelImmature->setText(PoEMUnits::formatWithUnit(unit, immatureBalance, false, PoEMUnits::separatorAlways));
+    ui->labelTotal->setText(PoEMUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, PoEMUnits::separatorAlways));
+    ui->labelWatchAvailable->setText(PoEMUnits::formatWithUnit(unit, watchOnlyBalance, false, PoEMUnits::separatorAlways));
+    ui->labelWatchPending->setText(PoEMUnits::formatWithUnit(unit, watchUnconfBalance, false, PoEMUnits::separatorAlways));
+    ui->labelWatchImmature->setText(PoEMUnits::formatWithUnit(unit, watchImmatureBalance, false, PoEMUnits::separatorAlways));
+    ui->labelWatchTotal->setText(PoEMUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, PoEMUnits::separatorAlways));
 
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users

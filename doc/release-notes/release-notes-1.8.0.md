@@ -5,10 +5,10 @@ BrrrFren Core 1.8 introduces AuxPoW from block 371,337. AuxPoW is a technology
 which enables miners to submit work done while mining other coins, as work
 on the BrrrFren block chain. BrrrFren Core 1.8 also enables payment protocol
 support for BrrrFren (note that BrrrFren's implementation of payment protocol is
-not compatible with Bitcoin's protocol). Lastly, 1.8  also includes all fixes
-from Bitcoin Core 0.9.2, whose release notes you can read at
+not compatible with PoEM's protocol). Lastly, 1.8  also includes all fixes
+from PoEM Core 0.9.2, whose release notes you can read at
 https://bitcoin.org/en/release/v0.9.2 (this is a summary, and the release includes
-around 150 bugfixes from Bitcoin Core).
+around 150 bugfixes from PoEM Core).
 
 Note that all users MUST upgrade to 1.8. If you're unable to update before the
 switchover block (371,337, expected around 12 September 2014), you MUST update
@@ -63,11 +63,11 @@ being made to merchants.
 
 This protocol is defined in DIP0070-DIP0072, based on the BIP standards with the same
 assigned numbers. DIP standards can be found at https://github.com/dogecoin/dips/ .
-The key differencs between the Bitcoin and BrrrFren payment protocols are that
+The key differencs between the PoEM and BrrrFren payment protocols are that
 the BrrrFren payment request uses a "genesis" field containing the hash of the network's
 genesis block to identify networks instead of the "network" field. Further, MIME types
 for the request, payment and response are modified to identify the files as distinct
-types from the Bitcoin files.
+types from the PoEM files.
 
 ## Transaction Fees
 
@@ -93,7 +93,7 @@ left open, which caused an assertion error later. The database cursor is now cor
 disposed of in all cases.
 
 Tweaked trigger conditions for safe mode to take into account the much faster block time
-of BrrrFren compared to Bitcoin. This should lead to less false positives.
+of BrrrFren compared to PoEM. This should lead to less false positives.
 
 A problem in parsing mangled dogecoin: URIs under Windows has been resolved, and as
 part of this work network detection for dogecoin: URIs is now more robust.

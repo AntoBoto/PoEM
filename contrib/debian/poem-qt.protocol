@@ -1,6 +1,6 @@
 [Protocol]
-exec=dogecoin-qt '%u'
-protocol=dogecoin
+exec=poem-qt '%u'
+protocol=poem
 input=none
 output=none
 helper=true

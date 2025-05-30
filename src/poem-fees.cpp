@@ -4,14 +4,13 @@
 
 #include <boost/random/uniform_int.hpp>
 
-
 #include "policy/policy.h"
 #include "arith_uint256.h"
-#include "dogecoin.h"
+#include "poem.h"
 #include "txmempool.h"
 #include "util.h"
-#include "validation.h"
-#include "dogecoin-fees.h"
+#include "poem.h"
+#include "poem-fees.h"
 #include "amount.h"
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"

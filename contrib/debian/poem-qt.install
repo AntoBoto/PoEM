@@ -1,6 +1,6 @@
-usr/local/bin/dogecoin-qt usr/bin
-share/pixmaps/dogecoin32.xpm usr/share/pixmaps
-share/pixmaps/dogecoin16.xpm usr/share/pixmaps
-share/pixmaps/dogecoin128.png usr/share/pixmaps
-debian/dogecoin-qt.desktop usr/share/applications
-debian/dogecoin-qt.protocol usr/share/kde4/services/
+usr/local/bin/poem-qt usr/bin
+share/pixmaps/poem32.xpm usr/share/pixmaps
+share/pixmaps/poem16.xpm usr/share/pixmaps
+share/pixmaps/poem128.png usr/share/pixmaps
+debian/poem-qt.desktop usr/share/applications
+debian/poem-qt.protocol usr/share/kde4/services/

@@ -1,0 +1,40 @@
+FROM ubuntu:22.04
+
+# Avoid prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install the exact same dependencies as in the GitHub workflow
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libtool \
+    autotools-dev \
+    automake \
+    pkg-config \
+    libevent-dev \
+    libssl-dev \
+    libboost-system-dev \
+    libboost-filesystem-dev \
+    libboost-thread-dev \
+    libboost-chrono-dev \
+    libboost-iostreams-dev \
+    libboost-program-options-dev \
+    libboost-test-dev \
+    qtbase5-dev \
+    qttools5-dev-tools \
+    protobuf-compiler \
+    libqrencode-dev \
+    libminiupnpc-dev \
+    libdb++-dev \
+    git \
+    bsdextrautils \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create build directory
+WORKDIR /build
+
+# Copy the source code
+COPY . .
+
+# Use the exact same build command as in GitHub Actions
+CMD ["/bin/bash", "-c", "./autogen.sh && ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=yes --disable-tests --disable-bench && make -j$(nproc) && echo 'Build completed. Check for binaries in src/' && ls -la src/ | grep -E '(poemd|poem|poem-qt)'"]

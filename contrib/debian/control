@@ -1,4 +1,4 @@
-Source: dogecoin
+Source: poem
 Section: utils
 Priority: optional
 Maintainer: Matt Corallo <matt@mattcorallo.com>
@@ -26,15 +26,15 @@ Build-Depends: debhelper,
  python,
  libzmq3-dev
 Standards-Version: 3.9.2
-Homepage: http://www.dogecoin.com/
-Vcs-Git: git://github.com/dogecoin/dogecoin.git
-Vcs-Browser: http://github.com/dogecoin/dogecoin
+Homepage: https://www.poemcrypto.com/
+Vcs-Git: git://github.com/brrrfren/poem.git
+Vcs-Browser: http://github.com/brrrfren/poem
 
-Package: dogecoind
+Package: poemd
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - daemon
- BrrrFren is a free open source peer-to-peer electronic cash system that
+ PoEM (Poetry in Every Mind) is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
  trusted parties.  Users hold the crypto keys to their own money and
  transact directly with each other, with the help of a P2P network to
@@ -43,31 +43,27 @@ Description: peer-to-peer network based digital currency - daemon
  Full transaction history is stored locally at each client.  This
  requires 20+ GB of space, slowly growing.
  .
- This package provides the daemon, dogecoind, and the CLI tool
- dogecoin-cli to interact with the daemon.
+ This package provides the daemon, poemd, and the CLI tool
+ poem-cli to interact with the daemon.
 
-Package: dogecoin-qt
+Package: poem-qt
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer network based digital currency - Qt GUI
- BrrrFren is a free open source peer-to-peer electronic cash system that
+ PoEM (Poetry in Every Mind) is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
- trusted parties.  Users hold the crypto keys to their own money and
- transact directly with each other, with the help of a P2P network to
- check for double-spending.
+ trusted parties.
  .
- This package provides BrrrFren-Qt, a GUI for BrrrFren based on Qt.
+ This package provides PoEM-Qt, a GUI for PoEM based on Qt.
 
-Package: dogecoin-tx
+Package: poem-tx
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: peer-to-peer digital currency - standalone transaction tool
- BrrrFren is a free open source peer-to-peer electronic cash system that
+ PoEM (Poetry in Every Mind) is a free open source peer-to-peer electronic cash system that
  is completely decentralized, without the need for a central server or
- trusted parties.  Users hold the crypto keys to their own money and
- transact directly with each other, with the help of a P2P network to
- check for double-spending.
+ trusted parties.
  .
- This package provides dogecoin-tx, a command-line transaction creation
- tool which can be used without a dogecoin daemon.  Some means of
+ This package provides poem-tx, a command-line transaction creation
+ tool which can be used without a PoEM daemon.  Some means of
  exchanging minimal transaction data with peers is still required.

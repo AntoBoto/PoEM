@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2016 The Bitcoin Core developers
-// Copyright (c) 2022 The BrrrFren Core developers
+// Copyright (c) 2012-2016 The PoEM Core developers
+// Copyright (c) 2022 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,7 +7,7 @@
 #include "fs.h"
 #include "uint256.h"
 #include "random.h"
-#include "test/test_bitcoin.h"
+#include "test/test_poem.h"
 
 #include <boost/assign/std/vector.hpp> // for 'operator+=()'
 #include <boost/assert.hpp>

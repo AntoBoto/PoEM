@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2016 The PoEM Core developers
 // Copyright (c) 2022-2023 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -9,7 +9,7 @@
 
 #include "amount.h"
 #include "auxpow.h"
-#include "dogecoin-fees.h"
+#include "poem-fees.h"
 #include "streams.h"
 #include "tinyformat.h"
 #include "ui_interface.h"

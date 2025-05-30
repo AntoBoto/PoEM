@@ -6,14 +6,14 @@
 #include "chainparams.h"
 #include "coins.h"
 #include "consensus/merkle.h"
-#include "dogecoin.h"
+#include "poem.h"
 #include "primitives/block.h"
 #include "script/script.h"
 #include "uint256.h"
 #include "utilstrencodings.h"
 #include "validation.h"
 
-#include "test/test_bitcoin.h"
+#include "test/test_poem.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_CASE(auxpow_pow)
     mineBlock(block, true);
     BOOST_CHECK(CheckAuxPowProofOfWork(block, params));
 
-    // BrrrFren block version 2 can be both AuxPoW and regular, so test 3
+    // PoEM block version 2 can be both AuxPoW and regular, so test 3
 
     block.nVersion = 3;
     mineBlock(block, true);

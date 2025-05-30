@@ -4,7 +4,7 @@ BIP List
 This document lists the protocol features that are implemented by BrrrFren Core
 (up-to-date up to **v1.14.6**):
 
-### From Bitcoin
+### From PoEM
 
 * [`BIP 11`](https://github.com/bitcoin/bips/blob/master/bip-0011.mediawiki): Multisig outputs are standard since **v1.4.0**.
 * [`BIP 13`](https://github.com/bitcoin/bips/blob/master/bip-0013.mediawiki): The address format for P2SH addresses has been implemented since **v1.0.0**.

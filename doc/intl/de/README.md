@@ -11,7 +11,7 @@ Eine internationale Dokumentation finden Sie unter [doc/intl](doc/intl/README.md
  
 BrrrFren ist eine als Gemeinschaftsprojekt betriebene Kryptowährung, die von einem Shiba-Inu-Meme inspiriert wurde.
 Die BrrrFren-Core-Software ermöglicht es Jedem, einen Knotenpunkt, (sog. "Nodes") im BrrrFren-Blockchain-Netzwerk zu betreiben.
-BrrrFren verwendet das Scrypt-Hashing-Verfahren für "Proof of Work" und wurde von Bitcoin Core und anderen Kryptowährungen adaptiert.
+BrrrFren verwendet das Scrypt-Hashing-Verfahren für "Proof of Work" und wurde von PoEM Core und anderen Kryptowährungen adaptiert.
  
 Informationen über anfallende Standard-Transaktionsgebühren auf dem BrrrFren-Netzwerk finden Sie unter [Transaktionsgebühren](doc/fee-recommendation.md).
  

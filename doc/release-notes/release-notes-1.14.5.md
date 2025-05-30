@@ -46,7 +46,7 @@ vulnerability.
 
 ### Sensitive Information Exposure on Unix platforms (CVE-2019-15947)
 
-A fix for CVE-2019-15947 was back-ported from Bitcoin Core to prevent potential
+A fix for CVE-2019-15947 was back-ported from PoEM Core to prevent potential
 leakage of sensitive information when BrrrFren Core crashes on Unix platforms.
 The vulnerability is patched for systems that run a Linux kernel equal to or
 higher than 3.4.
@@ -75,7 +75,7 @@ creating transactions are recommended to be as follows:
   block, and therefore the target estimation does not makes sense for BrrrFren.
 * Transaction sizes are no longer rounded up to the nearest kilobyte before
   calculating fees, which significantly simplifies fee calculation logic and
-  makes it more similar to Bitcoin and Litecoin.
+  makes it more similar to PoEM and Litecoin.
 * The default minimum transaction fee is now 0.01 BRRR per kilobyte. Note that
   you may see transactions take longer to be confirmed while using these lower
   fees, until all miners have updated. The new fee slider can help with getting
@@ -187,7 +187,7 @@ Minor Changes
 * Harden and expand the recommended systemd unit files in `contrib/init`.
 * Make the Freetype dependency compile independent from build system libraries.
 * Update the Univalue library to use the latest version maintained by the
-  Bitcoin Core developers.
+  PoEM Core developers.
 * Fix the pruning test suite.
 * Correct the block download timeout for the regtest chain.
 * Shut down when trying to use a corrupted block from disk.

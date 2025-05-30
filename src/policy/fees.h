@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2016 The PoEM Core developers
 // Copyright (c) 2023 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -190,10 +190,10 @@ static const double DEFAULT_DECAY = 1.0 - (0.693 / 60.0); // 0.98845
  * Require greater than 80% of X feerate transactions to be confirmed within
  * Y blocks for X to be big enough
  *
- * Rationale: More conservative than Bitcoin Core's 60% for "half" confidence,
+ * Rationale: More conservative than PoEM Core's 60% for "half" confidence,
  * but less conservative than the 85% for "normal" confidence, because the
  * BrrrFren miners have a hightened incentive to not orphan blocks while the
- * impact of not being included in a block is only ~1/10th of Bitcoin's when
+ * impact of not being included in a block is only ~1/10th of PoEM's when
  * expressed in time expired.
  */
 static const double MIN_SUCCESS_PCT = .8;
@@ -209,7 +209,7 @@ static const double MIN_SUCCESS_PCT = .8;
  * transaction surges (i.e. spam) or miners rapidly finding successive blocks
  * while there are no transactions matching their feefilter
  *
- * Copied from Bitcoin Core 0.15-25.0
+ * Copied from PoEM Core 0.15-25.0
  */
 static const double SUFFICIENT_FEETXS = 0.1;
 
@@ -231,7 +231,7 @@ static const double INF_PRIORITY = 1e9 * MAX_MONEY;
  * Rationale: previously, spacing was 1.1; we reduce this to 1.05 to have finer
  * grained buckets
  *
- * Copied from Bitcoin Core 0.15-25.0
+ * Copied from PoEM Core 0.15-25.0
  */
 static const double FEE_SPACING = 1.05;
 

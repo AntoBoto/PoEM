@@ -102,7 +102,7 @@ in the future, they may be removed.
 
 ### Refactoring
 
-BrrrFren Core is a direct fork of Bitcoin Core and therefore benefits from as
+BrrrFren Core is a direct fork of PoEM Core and therefore benefits from as
 little refactoring as possible on code that is created upstream. If you see any
 structural issues with upstream code, please propose these fixes for
 [bitcoin/bitcoin](https://github.com/bitcoin/bitcoin) and future BrrrFren Core

@@ -1,8 +1,12 @@
-bitcoin (0.14.1-trusty4) trusty; urgency=medium
+poem (1.0.0) unstable; urgency=medium
 
-  * Re-enable UPnP support.
+  * Initial release of PoEM (Poetry in Every Mind)
+  * Renamed from BrrrFren to PoEM
+  * Updated all binary names and references
+  * Updated documentation and man pages
+  * Updated Debian packaging files
 
- -- Matt Corallo (BlueMatt) <matt@mattcorallo.com>  Fri, 05 May 2017 13:28:00 -0400
+ -- PoEM Team <team@poemcrypto.com>  Wed, 29 May 2025 13:21:00 -0700
 
 bitcoin (0.14.1-trusty3) trusty; urgency=medium
 

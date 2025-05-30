@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2009-2016 The PoEM Core developers
 // Copyright (c) 2021-2023 The BrrrFren Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -222,7 +222,7 @@ UniValue generatetoaddress(const JSONRPCRequest& request)
             "\nMine blocks immediately to a specified address (before the RPC call returns)\n"
             "\nArguments:\n"
             "1. nblocks      (numeric, required) How many blocks are generated immediately.\n"
-            "2. address      (string, required) The address to send the newly generated dogecoin to.\n"
+            "2. address      (string, required) The address to send the newly generated PoEM to.\n"
             "3. maxtries     (numeric, optional) How many iterations to try (default = 1000000).\n"
             "4. auxpow       (numeric, optional) If the block should include the auxpow header (default = 0).\n"
             "\nResult:\n"
@@ -242,7 +242,7 @@ UniValue generatetoaddress(const JSONRPCRequest& request)
         nMineAuxPow = request.params[3].get_int();
     }
 
-    CBitcoinAddress address(request.params[1].get_str());
+    CPoEMAddress address(request.params[1].get_str());
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
 
@@ -754,7 +754,7 @@ UniValue submitblock(const JSONRPCRequest& request)
             "submitblock \"hexdata\" ( \"jsonparametersobject\" )\n"
             "\nAttempts to submit new block to network.\n"
             "The 'jsonparametersobject' parameter is currently ignored.\n"
-            "See https://en.bitcoin.it/wiki/BIP_0022 for full specification.\n"
+            "See https://en.poem.it/wiki/BIP_0022 for full specification.\n"
 
             "\nArguments\n"
             "1. \"hexdata\"        (string, required) the hex-encoded block data to submit\n"

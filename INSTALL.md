@@ -1,10 +1,10 @@
-# Installing BrrrFren Core
+# Installing PoEM Core
 
 ### Pre-compiled binaries
 
-The easiest way to install the latest version of the BrrrFren Core software is
-by to download the latest precompiled binaries for your platform from the
-[release page](https://github.com/dogecoin/dogecoin/releases). Currently,
+The easiest way to install the latest version of the PoEM Core software is
+to download the latest precompiled binaries for your platform from the
+[release page](https://github.com/poem/poem/releases). Currently,
 binaries are released for the following platforms:
 
 - Windows, 64-bit and 32-bit
@@ -28,17 +28,17 @@ binaries:
 | CentOS (x86)      | 7                    |
 | Fedora (x86)      | 28                   |
 
-It is possible to run BrrrFren Core on other systems and lower versions when
+It is possible to run PoEM Core on other systems and lower versions when
 compiling from source, see the chapters below for more information.
 
 #### Checking binary integrity
 
-Release binaries are created and verified by multiple independent people to
-ensure honest and malware-free releases. The provided binaries on this
-repository come with a `SHA256SUMS.asc` file; a pgp-signed list of each checksum
-of the released archives. This is only provided to enable people to quickly
-check the integrity of a downloaded release binary. You can find the pgp key
-used to sign the file among those listed in `contrib/gitian-keys`.
+Release binaries are created and verified by the PoEM Core development team to
+ensure honest and malware-free releases. The provided binaries on the
+release page come with a `SHA256SUMS.asc` file; a pgp-signed list of each checksum
+of the released archives. This is provided to enable users to quickly
+check the integrity of a downloaded release binary. The pgp key
+used to sign the file will be available on the project's website.
 
 To verify the integrity of the `SHA256SUMS.asc` file, you need `gpg`, after
 which you can simply run

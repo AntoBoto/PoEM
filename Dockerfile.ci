@@ -1,0 +1,188 @@
+# Dockerfile.ci
+FROM ubuntu:20.04
+
+# Set non-interactive frontend for apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    autoconf \
+    automake \
+    automake \
+    bsdmainutils \
+    build-essential \
+    ca-certificates \
+    ccache \
+    curl \
+    g++-9 \
+    g++-9-multilib \
+    gcc-9 \
+    git \
+    libboost-chrono-dev \
+    libboost-filesystem-dev \
+    libboost-iostreams-dev \
+    libboost-program-options-dev \
+    libboost-system-dev \
+    libboost-test-dev \
+    libboost-thread-dev \
+    libdb++-dev \
+    libevent-dev \
+    libssl-dev \
+    libtool \
+    pkg-config \
+    python3 \
+    python3-pip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set g++-9 as default
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9
+
+# Set environment variables for build
+ENV MAKEOPTS="-j$(nproc)"
+# Set C++11 standard with correct flags
+ENV CXXFLAGS="-O2 -pipe -std=c++11"
+ENV CFLAGS="-O2 -pipe"
+ENV CPPFLAGS=""
+
+# Create patches for problematic Boost headers
+WORKDIR /tmp
+
+# 1. Fix for boost::exception::object_hex_dump
+RUN mkdir -p /usr/include/boost/exception/detail/ && \
+    cat > /usr/include/boost/exception/detail/object_hex_dump.hpp <<'EOF'
+#ifndef BOOST_EXCEPTION_DETAIL_OBJECT_HEX_DUMP_HPP_INCLUDED_CUSTOM
+#define BOOST_EXCEPTION_DETAIL_OBJECT_HEX_DUMP_HPP_INCLUDED_CUSTOM
+
+#include <string>
+#include <vector>
+#include <cstdio>      // For snprintf
+#include <cstddef>     // For std::size_t
+
+#ifndef BOOST_EXCEPTION_OBJECT_HEX_DUMP_MAX_BYTES_CUSTOM
+#define BOOST_EXCEPTION_OBJECT_HEX_DUMP_MAX_BYTES_CUSTOM 128
+#endif
+
+namespace boost {
+namespace exception_detail {
+
+template <class T>
+inline std::string
+object_hex_dump( T const & x, std::size_t max_size = BOOST_EXCEPTION_OBJECT_HEX_DUMP_MAX_BYTES_CUSTOM ) {
+    std::string result;
+    result.reserve(max_size * 3 + 10);
+    result += "{ ";
+
+    char const * p = reinterpret_cast<char const *>(&x);
+    char byte_hex[4];
+
+    for( std::size_t i = 0; i != sizeof(x) && i != max_size; ++i, ++p ) {
+        snprintf(byte_hex, sizeof(byte_hex), "%02x", (unsigned int)(unsigned char)*p);
+        result += byte_hex;
+        if( (i + 1) != sizeof(x) && (i + 1) != max_size ) {
+            result += " ";
+        }
+    }
+
+    if( sizeof(x) > max_size ) {
+        result += "...";
+    }
+    result += " }";
+    return result;
+}
+
+} // namespace exception_detail
+} // namespace boost
+
+#endif // BOOST_EXCEPTION_DETAIL_OBJECT_HEX_DUMP_HPP_INCLUDED_CUSTOM
+EOF
+
+# 2. Fix for boost::variant storage_ field access issues
+RUN cat > /tmp/variant_storage_patch.hpp <<'EOF'
+#ifndef BOOST_VARIANT_DETAIL_STORAGE_PATCH_HPP
+#define BOOST_VARIANT_DETAIL_STORAGE_PATCH_HPP
+
+// This is a compatibility patch for boost::variant to work with different C++ ABIs
+// It ensures variant_data::storage_ is accessed safely
+
+#include <boost/variant/variant.hpp>
+
+namespace boost {
+namespace detail { namespace variant {
+
+// Add a safer accessor function for variant_data::storage_
+template <typename T>
+struct safe_storage_access {
+    typedef T value_type;
+    
+    template <typename Storage>
+    static void* get_storage_address(Storage& storage) {
+        // Use a type-safe, ABI-independent way to get the storage
+        return static_cast<void*>(&storage);
+    }
+    
+    template <typename Storage>
+    static const value_type& get(const Storage& storage) {
+        void* addr = const_cast<void*>(static_cast<const void*>(&storage));
+        return *static_cast<value_type*>(addr);
+    }
+    
+    template <typename Storage>
+    static value_type& get(Storage& storage) {
+        void* addr = static_cast<void*>(&storage);
+        return *static_cast<value_type*>(addr);
+    }
+};
+
+}} // namespace detail::variant
+} // namespace boost
+
+#endif // BOOST_VARIANT_DETAIL_STORAGE_PATCH_HPP
+EOF
+
+# Install the variant patch where it can be included
+RUN mkdir -p /usr/include/boost/variant/detail/ && \
+    cp /tmp/variant_storage_patch.hpp /usr/include/boost/variant/detail/
+
+# 3. Create a boost_patches.hpp header to include in PoEM
+RUN cat > /tmp/boost_patches.hpp <<'EOF'
+#ifndef POEM_BOOST_PATCHES_HPP
+#define POEM_BOOST_PATCHES_HPP
+
+// Include this header in key PoEM source files to apply Boost compatibility patches
+#include <boost/variant/detail/storage_patch.hpp>
+
+#endif // POEM_BOOST_PATCHES_HPP
+EOF
+
+WORKDIR /
+
+# Set up ccache with proper permissions
+RUN mkdir -p /ccache && \
+    chmod 777 /ccache && \
+    mkdir -p /ccache/tmp && \
+    chmod 777 /ccache/tmp
+
+# Set environment variables for ccache
+ENV CCACHE_DIR=/ccache
+ENV CCACHE_COMPRESS=1
+ENV CCACHE_MAXSIZE=2G
+ENV CCACHE_TEMPDIR=/ccache/tmp
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV PATH="/usr/lib/ccache:$PATH"
+
+# Create a non-root user to build the project
+RUN useradd -m -s /bin/bash builder && \
+    chown -R builder:builder /home/builder
+
+# Copy the internal build script and make it executable (as root)
+COPY build_inside_container.sh /usr/local/bin/build_inside_container.sh
+RUN chmod +x /usr/local/bin/build_inside_container.sh
+
+# Switch to builder user
+USER builder
+WORKDIR /home/builder/poem
+
+# Default command to run when starting the container
+CMD ["/bin/bash"]

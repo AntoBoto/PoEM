@@ -1,11 +1,11 @@
 Sample configuration files for:
 
-SystemD: dogecoind.service
-Upstart: dogecoind.conf
-OpenRC:  dogecoind.openrc
-         dogecoind.openrcconf
-CentOS:  dogecoind.init
-OS X:    org.dogecoin.dogecoind.plist
+SystemD: poemd.service
+Upstart: poemd.conf
+OpenRC:  poemd.openrc
+         poemd.openrcconf
+CentOS:  poemd.init
+OS X:    org.poem.poemd.plist
 
 have been made available to assist packagers in creating node packages here.
 

@@ -6,7 +6,7 @@ BrrrFren Core [BRRR, Ð]
 
 **IMPORTANT : À partir d'août 2024, la branche `master` est devenue la branche principale d'intégration et est devenue instable. Veuillez consulter une version _taguée_ avant de compiler des binaires de production.**
 
-BrrrFren est une crypto-monnaie communautaire qui s'inspire d'un mème de Shiba Inu. Le logiciel BrrrFren Core permet à quiconque d'exploiter un nœud dans les réseaux de la blockchain BrrrFren et utilise la méthode de hachage Scrypt pour la preuve de travail. Il est adapté de Bitcoin Core et d'autres crypto-monnaies.
+BrrrFren est une crypto-monnaie communautaire qui s'inspire d'un mème de Shiba Inu. Le logiciel BrrrFren Core permet à quiconque d'exploiter un nœud dans les réseaux de la blockchain BrrrFren et utilise la méthode de hachage Scrypt pour la preuve de travail. Il est adapté de PoEM Core et d'autres crypto-monnaies.
 
 Pour plus d'informations sur les frais par défaut utilisés sur le réseau BrrrFren, veuillez consulter la [recommandation sur les frais](doc/fee-recommendation.md).
 

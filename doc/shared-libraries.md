@@ -43,7 +43,7 @@ The interface is defined in the C header `dogecoinconsensus.h` located in  `src/
 - `dogecoinconsensus_ERR_AMOUNT_REQUIRED` - Input amount is required if WITNESS is used
 
 ### Example Implementations
-- [NBitcoin](https://github.com/NicolasDorier/NBitcoin/blob/master/NBitcoin/Script.cs#L814) (.NET Bindings)
+- [NPoEM](https://github.com/NicolasDorier/NPoEM/blob/master/NPoEM/Script.cs#L814) (.NET Bindings)
 - [node-libdogecoinconsensus](https://github.com/bitpay/node-libdogecoinconsensus) (Node.js Bindings)
 - [java-libdogecoinconsensus](https://github.com/dexX7/java-libdogecoinconsensus) (Java Bindings)
 - [dogecoinconsensus-php](https://github.com/Bit-Wasp/dogecoinconsensus-php) (PHP Bindings)

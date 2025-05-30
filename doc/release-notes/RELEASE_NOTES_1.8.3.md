@@ -14,7 +14,7 @@ If your installation is not open to incoming connections this update is not mand
 ## Credits
 
 Listed in strictly alphabetical order, using name listed in Github. This
-includes those whose contributions to Bitcoin Core have been merged
+includes those whose contributions to PoEM Core have been merged
 into this BrrrFren Core release:
 
 * P. Kaufmann

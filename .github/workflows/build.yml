@@ -77,11 +77,9 @@ jobs:
     - name: Verify Boost installation
       if: matrix.os == 'ubuntu-22.04'
       run: |
-        # Verify Boost headers are present
         echo "=== Verifying Boost installation ==="
         if [ ! -f /usr/include/boost/type_traits/is_standard_layout.hpp ]; then
           echo "ERROR: Boost headers not found in expected location"
-          echo "Please ensure libboost-all-dev is installed"
           exit 1
         fi
         echo "✓ Boost headers verified"
@@ -89,68 +87,46 @@ jobs:
     - name: Verify policy directory
       if: matrix.os == 'ubuntu-22.04'
       run: |
-        # Initialize submodules if they exist
         if [ -f .gitmodules ]; then
           echo "=== Initializing submodules ==="
           git submodule update --init --recursive
         fi
-        
-        # Verify policy directory and required headers
         echo "=== Verifying policy directory ==="
-        local missing=0
+        missing=0
         for header in "src/policy/feerate.h" "src/policy/policy.h"; do
           if [ ! -f "$header" ]; then
             echo "ERROR: Missing required header: $header"
             missing=1
           fi
         done
-        
         if [ $missing -ne 0 ]; then
           echo "Please ensure the policy directory is properly set up with all required headers."
-          echo "You may need to copy the policy directory from Bitcoin Core's source."
           exit 1
         fi
         echo "✓ Policy headers verified"
-        
-        # Clean any previous build artifacts
+
+    - name: Clean, configure & build (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
         make distclean || true
-        
-        # Regenerate build system
-        if [ -f autogen.sh ]; then
-          ./autogen.sh
-        fi
-        
-        # Configure with necessary flags
+        if [ -f autogen.sh ]; then ./autogen.sh; fi
         ./configure \
-          --enable-static \
-          --disable-shared \
-          --with-pic \
-          --with-incompatible-bdb \
-          --with-qt=no \
-          --disable-tests \
-          --disable-bench \
-          --disable-wallet \
-          --disable-zmq \
+          --enable-static --disable-shared --with-pic \
+          --with-incompatible-bdb --with-qt=no \
+          --disable-tests --disable-bench --disable-wallet --disable-zmq \
           CPPFLAGS="-DHAVE_CONFIG_H -I$(pwd)/src"
-        
-        # Build with verbose output
-        make V=1 -j$(nproc) || make V=1
-        
-        echo "=== Checking what binaries exist in src/ ==="
-        ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|brrrfren)"
-        
+        make V=1 -j$(nproc)
+        echo "=== Checking binaries in src/ ==="
+        ls -la src/ | grep -E "(dogecoind|dogecoin|poemd|poem)"
+        mkdir -p dist
         if [ -f src/poemd ]; then
           strip src/poemd src/poem-cli src/poem-tx
-          mkdir -p dist
           cp src/poemd src/poem-cli src/poem-tx dist/
         elif [ -f src/dogecoind ]; then
           strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
-          mkdir -p dist
           cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
         else
-          echo "ERROR: Could not find expected binaries!"
-          ls -la src/
-          exit 1
+          echo "ERROR: No expected binaries found!"; exit 1
         fi
 
     - name: Build (Windows)
@@ -158,82 +134,47 @@ jobs:
       shell: msys2 {0}
       run: |
         ./autogen.sh
-        
-        # Work around MSYS2 missing libboost_system-mt.a issue
-        echo "Working around missing libboost_system-mt.a in MSYS2..."
-        if [ ! -f /mingw64/lib/libboost_system-mt.a ]; then
-          echo "Creating dummy libboost_system-mt.a (header-only in boost 1.88)"
-          ar crs /mingw64/lib/libboost_system-mt.a
-        fi
-        
-        # Set boost environment variables
+        echo "Working around missing libboost_system-mt.a..."
+        if [ ! -f /mingw64/lib/libboost_system-mt.a ]; then ar crs /mingw64/lib/libboost_system-mt.a; fi
         export BOOST_ROOT=/mingw64
         export BOOST_INCLUDEDIR=/mingw64/include
         export BOOST_LIBRARYDIR=/mingw64/lib
-        export BOOST_SYSTEM_LIB=boost_system-mt
-        export BOOST_FILESYSTEM_LIB=boost_filesystem-mt
-        export BOOST_THREAD_LIB=boost_thread-mt
-        export BOOST_CHRONO_LIB=boost_chrono-mt
-        export BOOST_PROGRAM_OPTIONS_LIB=boost_program_options-mt
-        export BOOST_UNIT_TEST_FRAMEWORK_LIB=boost_unit_test_framework-mt
-        
-        # Force configure to accept that boost_system is available
         export ax_cv_boost_system=yes
-        
-        # Set C++17 + disable tests + add missing Windows libs
         export CXXFLAGS="-g -O2 -std=c++17"
         export LDFLAGS="-lbcrypt"
-        
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
           LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
           CXXFLAGS="${CXXFLAGS}" \
           --enable-static --disable-shared --with-pic \
           --with-incompatible-bdb --with-qt=no \
-          --disable-tests --disable-bench \
-          --with-boost="${BOOST_ROOT}"
-          
+          --disable-tests --disable-bench --with-boost="${BOOST_ROOT}"
         make -j$(nproc)
-        
-        echo "=== Checking what binaries exist in src/ ==="
+        echo "=== Checking binaries in src/ ==="
         ls -la src/ | grep -E "\.exe$"
-        
+        mkdir -p dist
         if [ -f src/poemd.exe ]; then
           strip src/poemd.exe src/poem-cli.exe src/poem-tx.exe
-          mkdir -p dist
           cp src/poemd.exe src/poem-cli.exe src/poem-tx.exe dist/
         elif [ -f src/dogecoind.exe ]; then
           strip src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe
-          mkdir -p dist
           cp src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe dist/
         else
-          echo "ERROR: Could not find expected binaries!"
-          ls -la src/
-          exit 1
+          echo "ERROR: No expected binaries found!"; exit 1
         fi
 
     - name: Package binaries
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
-          cd dist
-          tar -czf ../poem-linux-x64.tar.gz *
-          cd ..
-          echo "ASSET_NAME=poem-linux-x64.tar.gz" >> $GITHUB_ENV
+          cd dist && tar -czf ../poem-linux-x64.tar.gz * && echo "ASSET_NAME=poem-linux-x64.tar.gz" >> $GITHUB_ENV
         else
-          cd dist
-          7z a ../poem-windows-x64.zip *
-          cd ..
-          echo "ASSET_NAME=poem-windows-x64.zip" >> $GITHUB_ENV
+          cd dist && 7z a ../poem-windows-x64.zip * && echo "ASSET_NAME=poem-windows-x64.zip" >> $GITHUB_ENV
         fi
       shell: bash
 
     - name: Generate checksums
       run: |
-        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
-          sha256sum poem-linux-x64.tar.gz > poem-linux-x64.tar.gz.sha256
-        else
-          sha256sum poem-windows-x64.zip > poem-windows-x64.zip.sha256
-        fi
+        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then sha256sum poem-linux-x64.tar.gz > poem-linux-x64.tar.gz.sha256; else sha256sum poem-windows-x64.zip > poem-windows-x64.zip.sha256; fi
       shell: bash
 
     - name: Upload binaries to release

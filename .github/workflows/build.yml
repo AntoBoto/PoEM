@@ -2,7 +2,7 @@ name: PoEM Core Build
 
 on:
   push:
-    branches: [ "main", "master", "dev", "develop", "release/*" ]
+    branches: [ "main", "master", "dev", "develop", "release/*", "fix-build" ]
   pull_request:
     branches: [ "main", "master" ]
   workflow_dispatch:

@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
 // Copyright (c) 2022-2023 The BrrrFren Core developers
+// Copyright (c) 2024 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -803,7 +804,7 @@ void InitLogging()
     fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("BrrrFren version %s\n", FormatFullVersion());
+    LogPrintf("PoEM version %s\n", FormatFullVersion());
 }
 
 namespace { // Variables internal to initialization process only

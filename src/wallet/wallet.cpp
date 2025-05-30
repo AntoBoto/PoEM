@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
 // Copyright (c) 2022-2023 The BrrrFren Core developers
+// Copyright (c) 2024 The PoEM Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,8 +10,8 @@
 #include "base58.h"
 #include "checkpoints.h"
 #include "chain.h"
-#include "dogecoin.h"
-#include "dogecoin-fees.h"
+#include "brrrfren.h"
+#include "brrrfren-fees.h"
 #include "fs.h"
 #include "wallet/coincontrol.h"
 #include "consensus/consensus.h"
@@ -2147,7 +2148,7 @@ static void ApproximateBestSubset(vector<pair<CAmount, pair<const CWalletTx*,uns
     }
 }
 
-// BrrrFren: MIN_CHANGE as a function of discardThreshold and minTxFee(1000)
+// PoEM: MIN_CHANGE as a function of discardThreshold and minTxFee(1000)
 // Makes the wallet change output minimums configurable instead of hardcoded
 // defaults.
 CAmount CWallet::GetMinChange()

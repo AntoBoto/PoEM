@@ -1,120 +1,73 @@
-name: PoEM Core Build
+name: CI Build
 
 on:
   push:
-    branches: [ "main", "master", "dev", "develop", "release/*", "fix-build" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main", "master" ]
-  workflow_dispatch:
-    inputs:
-      debug_enabled:
-        description: 'Run the build with debugging enabled'
-        type: boolean
-        required: false
-        default: false
+    branches:
+      - main
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-22.04
-    
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    
-    - name: Cache Linux dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/apt
-          ~/.local/share/vcpkg
-        key: ${{ runner.os }}-deps-${{ hashFiles('**/configure.ac') }}
-        restore-keys: |
-          ${{ runner.os }}-deps-
-    
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        # Install build essentials and core dependencies
-        sudo apt-get install -y \
-          build-essential \
-          libtool \
-          autotools-dev \
-          automake \
-          pkg-config \
-          libevent-dev \
-          libssl-dev \
-          qtbase5-dev \
-          qttools5-dev-tools \
-          protobuf-compiler \
-          libqrencode-dev \
-          libminiupnpc-dev \
-          libdb++-dev \
-          libdb5.3++-dev \
-          libsqlite3-dev \
-          libzmq3-dev
-        
-        # Install Boost libraries and headers
-        # Using meta-package to ensure all required Boost components are installed
-        sudo apt-get install -y libboost-all-dev
-        
-        # Verify Boost headers are installed
-        echo "=== Verifying Boost headers ==="
-        ls -la /usr/include/boost/type_traits/is_standard_layout.hpp || echo "ERROR: Boost headers not found!"
-        dpkg -L libboost-dev | grep -i type_traits || echo "WARNING: Boost type_traits not found!"
-        echo "Boost version: $(grep '#define BOOST_LIB_VERSION' /usr/include/boost/version.hpp 2>/dev/null || echo 'Boost version not found')"
-    
-    - name: Build
-      run: |
-        # Clean any previous build artifacts
-        make distclean || true
-        git clean -xfd || true
-        
-        # Regenerate build system
-        ./autogen.sh
-        
-        # Configure with necessary flags
-        ./configure \
-          --enable-static \
-          --disable-shared \
-          --with-pic \
-          --with-incompatible-bdb \
-          --with-qt=no \
-          --disable-tests \
-          --disable-bench \
-          --disable-wallet \
-          --disable-zmq \
-          --with-boost-libdir=/usr/lib/x86_64-linux-gnu \
-          --with-boost=/usr \
-          CXXFLAGS="-std=c++17 -DHAVE_CONFIG_H -D_GLIBCXX_USE_CXX11_ABI=1"
-        
-        # Build with verbose output for debugging
-        make V=1 -j$(nproc) || make V=1
-        
-        # Check for built binaries
-        echo "=== Build Artifacts ==="
-        find src/ -type f -executable -ls
-        ls -la src/ | grep -E "(poemd|poem|dogecoin)" || echo "No binaries found"
-        
-        # Create dist directory and copy binaries
-        mkdir -p dist
-        if [ -f src/poemd ]; then
-          strip src/poemd src/poem-cli src/poem-tx
-          cp src/poemd src/poem-cli src/poem-tx dist/
-        elif [ -f src/dogecoind ]; then
-          strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
-          cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
-        else
-          echo "ERROR: Could not find expected binaries!"
-          ls -la src/
-          exit 1
-        fi
-    
-    - name: Upload Binary
-      uses: actions/upload-artifact@v4
-      with:
-        name: poem-linux-binaries
-        path: dist/
-        if-no-files-found: error
-        retention-days: 5
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf automake libtool pkg-config build-essential \
+            libevent-dev libssl-dev libminiupnpc-dev \
+            libboost-all-dev
+
+      - name: Fetch submodules (if any)
+        run: git submodule update --init --recursive
+
+      - name: Clean previous build artifacts
+        run: |
+          make distclean || true
+
+      - name: Generate build system
+        run: |
+          if [ -f autogen.sh ]; then
+            ./autogen.sh
+          fi
+
+      - name: Configure project
+        run: |
+          ./configure \
+            --enable-static \
+            --with-pic \
+            --with-incompatible-bdb \
+            --with-qt=no \
+            --disable-tests \
+            --disable-bench \
+            --disable-wallet \
+            --disable-zmq \
+            CPPFLAGS="-DHAVE_CONFIG_H"
+
+      - name: Build project
+        run: |
+          make -j$(nproc)
+
+          # Check for built binaries
+          find src/ -type f -executable -ls
+
+      - name: Upload artifacts
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: poem-binaries
+          path: |
+            src/poemd
+            src/poem-cli
+            src/poem-tx
+            src/dogecoind
+            src/dogecoin-cli
+            src/dogecoin-tx

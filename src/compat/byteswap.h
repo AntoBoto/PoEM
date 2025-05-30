@@ -6,7 +6,7 @@
 #define BITCOIN_COMPAT_BYTESWAP_H
 
 #if defined(HAVE_CONFIG_H)
-"config/poem-config.h"
+#include <config/poem-config.h>
 #endif
 
 #include <stdint.h>

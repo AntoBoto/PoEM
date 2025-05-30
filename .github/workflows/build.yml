@@ -44,6 +44,7 @@ jobs:
           pkg-config \
           libevent-dev \
           libssl-dev \
+          libboost-all-dev \
           libboost-system-dev \
           libboost-filesystem-dev \
           libboost-thread-dev \
@@ -51,12 +52,16 @@ jobs:
           libboost-iostreams-dev \
           libboost-program-options-dev \
           libboost-test-dev \
+          libboost-dev \
           qtbase5-dev \
           qttools5-dev-tools \
           protobuf-compiler \
           libqrencode-dev \
           libminiupnpc-dev \
-          libdb++-dev
+          libdb++-dev \
+          libdb5.3++-dev \
+          libsqlite3-dev \
+          libzmq3-dev
     
     - name: Build
       run: |
@@ -70,7 +75,8 @@ jobs:
           --disable-tests \
           --disable-bench \
           --disable-wallet \
-          --disable-zmq
+          --disable-zmq \
+          CPPFLAGS="-DHAVE_CONFIG_H"
         
         make -j$(nproc)
         

@@ -23,7 +23,44 @@
 #include <boost/static_assert.hpp>
 
 // Include all Boost type traits headers that we might need
-#include <boost/type_traits.hpp>
+#include <boost/version.hpp>
+
+// Include individual type traits instead of the full type_traits.hpp
+// to avoid issues with missing headers in some Boost versions
+#include <boost/type_traits/is_same.hpp>
+#include <boost/type_traits/is_convertible.hpp>
+#include <boost/type_traits/remove_cv.hpp>
+#include <boost/type_traits/remove_reference.hpp>
+#include <boost/type_traits/remove_pointer.hpp>
+#include <boost/type_traits/add_pointer.hpp>
+#include <boost/type_traits/decay.hpp>
+#include <boost/type_traits/is_base_of.hpp>
+#include <boost/type_traits/is_const.hpp>
+#include <boost/type_traits/is_void.hpp>
+#include <boost/type_traits/conditional.hpp>
+#include <boost/type_traits/alignment_of.hpp>
+#include <boost/type_traits/type_with_alignment.hpp>
+#include <boost/type_traits/aligned_storage.hpp>
+#include <boost/type_traits/is_arithmetic.hpp>
+#include <boost/type_traits/is_enum.hpp>
+#include <boost/type_traits/is_polymorphic.hpp>
+#include <boost/type_traits/is_empty.hpp>
+#include <boost/type_traits/has_trivial_constructor.hpp>
+#include <boost/type_traits/has_trivial_copy.hpp>
+#include <boost/type_traits/has_trivial_assign.hpp>
+#include <boost/type_traits/has_trivial_destructor.hpp>
+#include <boost/type_traits/has_nothrow_constructor.hpp>
+#include <boost/type_traits/has_nothrow_copy.hpp>
+#include <boost/type_traits/has_nothrow_assign.hpp>
+#include <boost/type_traits/has_nothrow_destructor.hpp>
+#include <boost/type_traits/has_virtual_destructor.hpp>
+
+// For Boost 1.58 and earlier, is_standard_layout might not be available
+#if BOOST_VERSION < 105900
+namespace boost {
+    template<typename T> struct is_standard_layout : public boost::true_type {};
+}
+#endif
 
 // Include Boost smart pointers
 #include <boost/smart_ptr/shared_ptr.hpp>

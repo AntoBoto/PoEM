@@ -36,6 +36,7 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt-get update
+        # Install build essentials and base dependencies
         sudo apt-get install -y \
           build-essential \
           libtool \
@@ -44,31 +45,24 @@ jobs:
           pkg-config \
           libevent-dev \
           libssl-dev \
+          # Install all available Boost development packages
           libboost-all-dev \
-          libboost-system-dev \
-          libboost-filesystem-dev \
-          libboost-thread-dev \
-          libboost-chrono-dev \
-          libboost-iostreams-dev \
-          libboost-program-options-dev \
-          libboost-test-dev \
-          libboost-type-erasure-dev \
-          libboost-signals-dev \
-          libboost-date-time-dev \
-          libboost-regex-dev \
+          # QT5 development packages
           qtbase5-dev \
           qttools5-dev-tools \
           libqt5svg5-dev \
+          libqt5gui5 \
+          # Protocol Buffers
           protobuf-compiler \
           libprotobuf-dev \
+          # Other dependencies
           libqrencode-dev \
           libminiupnpc-dev \
           libdb++-dev \
           libdb5.3++-dev \
           bsdmainutils \
           libzmq3-dev \
-          libsqlite3-dev \
-          libqt5gui5
+          libsqlite3-dev
     
     - name: Build
       run: |

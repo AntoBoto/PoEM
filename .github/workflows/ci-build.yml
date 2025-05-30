@@ -24,15 +24,22 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
-        sudo apt-get install -y libssl-dev libevent-dev libboost-system-dev libboost-filesystem-dev libboost-chrono-dev \
-          libboost-test-dev libboost-thread-dev libminiupnpc-dev libzmq3-dev libqt5gui5 libqt5core5a libqt5dbus5 \
-          qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler libqrencode-dev
+        sudo apt-get install -y libssl-dev libevent-dev libboost-system1.74-dev libboost-filesystem1.74-dev \
+          libboost-chrono1.74-dev libboost-test1.74-dev libboost-thread1.74-dev libboost-program-options1.74-dev \
+          libminiupnpc-dev libzmq3-dev libqt5gui5 libqt5core5a libqt5dbus5 \
+          qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler libqrencode-dev \
+          libdb++-dev libdb-dev unzip
 
     - name: Build
       run: |
         ./autogen.sh
-        ./configure --disable-wallet --without-gui --disable-tests --disable-bench
-        make -j$(nproc)
+        export BOOST_LDFLAGS="-L/usr/lib/x86_64-linux-gnu"
+        export BOOST_CPPFLAGS="-I/usr/include/boost"
+        ./configure --disable-wallet --without-gui --disable-tests --disable-bench \
+                   --with-boost-libdir=/usr/lib/x86_64-linux-gnu \
+                   --with-boost=/usr \
+                   CXXFLAGS="-g -O2 -std=c++17"
+        make -j$(nproc) V=1
 
     - name: Run basic tests
       run: |

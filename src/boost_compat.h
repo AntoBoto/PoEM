@@ -21,34 +21,63 @@
 #include <boost/version.hpp>
 #include <boost/config.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_convertible.hpp>
-#include <boost/type_traits/remove_cv.hpp>
-#include <boost/type_traits/remove_reference.hpp>
-#include <boost/type_traits/remove_pointer.hpp>
-#include <boost/type_traits/add_pointer.hpp>
-#include <boost/type_traits/decay.hpp>
-#include <boost/type_traits/is_base_of.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/is_void.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/alignment_of.hpp>
-#include <boost/type_traits/type_with_alignment.hpp>
-#include <boost/type_traits/alignment_of.hpp>
-#include <boost/type_traits/aligned_storage.hpp>
-#include <boost/type_traits/is_arithmetic.hpp>
-#include <boost/type_traits/is_enum.hpp>
-#include <boost/type_traits/is_polymorphic.hpp>
-#include <boost/type_traits/is_empty.hpp>
-#include <boost/type_traits/has_trivial_constructor.hpp>
-#include <boost/type_traits/has_trivial_copy.hpp>
-#include <boost/type_traits/has_trivial_assign.hpp>
-#include <boost/type_traits/has_trivial_destructor.hpp>
-#include <boost/type_traits/has_nothrow_constructor.hpp>
-#include <boost/type_traits/has_nothrow_copy.hpp>
-#include <boost/type_traits/has_nothrow_assign.hpp>
-#include <boost/type_traits/has_nothrow_destructor.hpp>
-#include <boost/type_traits/has_virtual_destructor.hpp>
+
+// Include all Boost type traits headers that we might need
+#include <boost/type_traits.hpp>
+
+// Include Boost smart pointers
+#include <boost/smart_ptr/shared_ptr.hpp>
+#include <boost/smart_ptr/weak_ptr.hpp>
+#include <boost/smart_ptr/make_shared.hpp>
+
+// Include Boost utility headers
+#include <boost/utility/addressof.hpp>
+#include <boost/utility/enable_if.hpp>
+#include <boost/utility/string_view.hpp>
+
+// Include Boost function and bind
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+
+// Include Boost thread and synchronization
+#include <boost/thread.hpp>
+#include <boost/thread/locks.hpp>
+#include <boost/thread/shared_mutex.hpp>
+
+// Include Boost filesystem
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
+
+// Include Boost program options
+#include <boost/program_options.hpp>
+
+// Include Boost algorithm
+#include <boost/algorithm/string.hpp>
+
+// Include Boost range
+#include <boost/range/iterator_range.hpp>
+
+// Include Boost optional
+#include <boost/optional.hpp>
+
+// Include Boost variant
+#include <boost/variant.hpp>
+
+// Include Boost any
+#include <boost/any.hpp>
+
+// Include Boost date_time
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+// Include Boost signals2
+#include <boost/signals2/signal.hpp>
+
+// Include Boost asio
+#include <boost/asio.hpp>
+
+// Include Boost interprocess
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_recursive_mutex.hpp>
 #include <boost/type_traits/is_abstract.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/type_traits/is_union.hpp>

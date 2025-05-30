@@ -21,6 +21,7 @@
 #include "httprpc.h"
 #include "utilstrencodings.h"
 
+#include <boost/shared_ptr.hpp>  // Must be included before any other Boost headers
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/thread.hpp>
 

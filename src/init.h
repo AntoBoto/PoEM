@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include <boost/shared_ptr.hpp>  // Must be included before any other Boost headers
+
 class CScheduler;
 class CWallet;
 

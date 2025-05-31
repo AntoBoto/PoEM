@@ -131,3 +131,8 @@ stage/
 *.ipr
 *.pem
 !share/certs/*.pem
+
+# Compiled binaries
+src/poemd
+src/poem-cli
+src/poem-tx

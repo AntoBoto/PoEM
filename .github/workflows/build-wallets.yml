@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - rename2
+      - rename2-working
     tags:
       - 'v*.*.*'
 

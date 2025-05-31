@@ -297,21 +297,25 @@ jobs:
           echo "=== Current directory structure ==="
           find . -type d | sort
           
-          # Look for all PoEM binaries and libraries, excluding build artifacts
+          # Look for core PoEM binaries and Qt wallet if it exists
           echo "=== Looking for PoEM binaries and libraries ==="
-          find . -type f \
-            \( -name "poem*" ! -name "*.o" ! -name "*.a" ! -name "*.la" ! -name "*.lo" \) \
-            -o -name "libpoem*.so*" | sort
+          find . -type f \( -name "poemd" -o -name "poem-cli" -o -name "poem-tx" -o -name "poem-qt" \) -o -name "libpoem*.so*" | sort
           
           # Create dist directory if it doesn't exist
           mkdir -p dist
           
-          # Copy PoEM binaries and libraries to dist directory
-          echo "=== Copying PoEM files to dist/ ==="
-          find . -type f \
-            \( -name "poem*" ! -name "*.o" ! -name "*.a" ! -name "*.la" ! -name "*.lo" \) \
-            -o -name "libpoem*.so*" \
-            -exec cp -v {} dist/ \;
+          # Copy PoEM binaries to dist directory
+          echo "=== Copying PoEM binaries to dist/ ==="
+          # Core binaries
+          find . -type f \( -name "poemd" -o -name "poem-cli" -o -name "poem-tx" \) -exec cp -v {} dist/ \;
+          # Qt wallet (if built)
+          if [ -f "src/qt/poem-qt" ]; then
+            cp -v src/qt/poem-qt dist/
+          fi
+          # Libraries
+          if ls libpoem*.so* 1> /dev/null 2>&1; then
+            cp -v libpoem*.so* dist/
+          fi
           
           # Verify what's in dist/
           echo "=== Contents of dist/ after copying ==="
@@ -337,21 +341,25 @@ jobs:
           echo "=== Current directory structure ==="
           find . -type d | sort
           
-          # Look for all PoEM binaries and DLLs, excluding build artifacts
+          # Look for core PoEM binaries, Qt wallet, and DLLs
           echo "=== Looking for PoEM binaries and DLLs ==="
-          find . -type f \
-            \( -name "poem*" ! -name "*.o" ! -name "*.a" ! -name "*.la" ! -name "*.lo" ! -name "*.obj" \) \
-            -o -name "*.dll" | sort
+          find . -type f \( -name "poemd.exe" -o -name "poem-cli.exe" -o -name "poem-tx.exe" -o -name "poem-qt.exe" \) -o -name "*.dll" | sort
           
           # Create dist directory if it doesn't exist
           mkdir -p dist
           
-          # Copy PoEM binaries and DLLs to dist directory
-          echo "=== Copying PoEM files to dist/ ==="
-          find . -type f \
-            \( -name "poem*" ! -name "*.o" ! -name "*.a" ! -name "*.la" ! -name "*.lo" ! -name "*.obj" \) \
-            -o -name "*.dll" \
-            -exec cp -v {} dist/ \;
+          # Copy PoEM binaries to dist directory
+          echo "=== Copying PoEM binaries to dist/ ==="
+          # Core binaries
+          find . -type f \( -name "poemd.exe" -o -name "poem-cli.exe" -o -name "poem-tx.exe" \) -exec cp -v {} dist/ \;
+          # Qt wallet (if built)
+          if [ -f "src/qt/poem-qt.exe" ]; then
+            cp -v src/qt/poem-qt.exe dist/
+          fi
+          # DLLs
+          if ls *.dll 1> /dev/null 2>&1; then
+            cp -v *.dll dist/
+          fi
           
           # Verify what's in dist/
           echo "=== Contents of dist/ after copying ==="

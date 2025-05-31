@@ -3,12 +3,12 @@ name: Build BrrrFren Wallets
 on:
   push:
     branches:
-      - poem-rename-cleanup
+      - main
     tags:
       - 'v*.*.*'
   pull_request:
     branches:
-      - poem-rename-cleanup
+      - main
 
 permissions:
   contents: write

@@ -66,11 +66,11 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += dogecoind poemd
+  bin_PROGRAMS = poemd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += dogecoin-cli poem-cli dogecoin-tx poem-tx
+  bin_PROGRAMS += poem-cli poem-tx
 endif
 
 .PHONY: FORCE check-symbols check-security

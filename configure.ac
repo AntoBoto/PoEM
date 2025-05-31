@@ -1,38 +1,27 @@
 dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
-# Version bump for PoEM rebranding
-define(_CLIENT_VERSION_MAJOR, 1)
-define(_CLIENT_VERSION_MINOR, 15)
+# Version bump to 2.0.0 for PoEM rebranding
+define(_CLIENT_VERSION_MAJOR, 2)
+define(_CLIENT_VERSION_MINOR, 0)
 define(_CLIENT_VERSION_REVISION, 0)
 define(_CLIENT_VERSION_BUILD, 0)
-define(_CLIENT_VERSION_IS_RELEASE, false)
+define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2024)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
 define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Bitcoin Core and BrrrFren Core]])
-define(_CURRENT_RELEASE_DATE,[[2024-08-03]])
-define(_EXPECTED_DAYS_TO_NEXT_RELEASE,[270])
-AC_INIT([BrrrFren Core], [1.0.0], [brrrfren@protonmail.com], [brrrfren])
+define(_CURRENT_RELEASE_DATE,[[2024-05-31]])
+define(_EXPECTED_DAYS_TO_NEXT_RELEASE,[180])
+AC_INIT([BrrrFren Core], [2.0.0], [brrrfren@protonmail.com], [brrrfren])
 AC_CONFIG_SRCDIR([src/validation.cpp])
 AC_CONFIG_HEADERS([src/config/bitcoin-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
 
-# Binary names - keep old names for backward compatibility
-BITCOIN_DAEMON_NAME=dogecoind
-BITCOIN_GUI_NAME=dogecoin-qt
-BITCOIN_CLI_NAME=dogecoin-cli
-
-# New PoEM binary names
-POEM_DAEMON_NAME=poemd
-POEM_CLI_NAME=poem-cli
-POEM_TX_NAME=poem-tx
-AC_SUBST(POEM_DAEMON_NAME)
-AC_SUBST(POEM_CLI_NAME)
-AC_SUBST(POEM_TX_NAME)
-
-# Warn about deprecated binary names
-AC_MSG_WARN([dogecoind/dogecoin-cli names are deprecated and will be removed in a future version. Use poemd/poem-cli instead.])
-BITCOIN_TX_NAME=dogecoin-tx
+# Binary names
+BITCOIN_DAEMON_NAME=poemd
+BITCOIN_UTIL_NAME=poem-util
+BITCOIN_CLI_NAME=poem-cli
+BITCOIN_TX_NAME=poem-tx
 
 AC_CANONICAL_HOST
 

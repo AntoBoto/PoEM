@@ -326,37 +326,38 @@ jobs:
           cd ..
           ASSET_NAME="brrrfren-linux-x64.tar.gz"
         else
-          echo "Packaging Windows binaries"
+          echo "=== Packaging Windows binaries ==="
+          
+          # Debug - show directory structure to find where binaries are
+          echo "=== Current directory structure ==="
+          find . -type d | sort
+          
+          # Look for PoEM binaries in common locations
+          echo "=== Looking for PoEM binaries ==="
+          find . -type f \( -name "poemd.exe" -o -name "poem-cli.exe" -o -name "poem-tx.exe" \) -o -name "*.dll" | sort
+          
+          # Create dist directory if it doesn't exist
+          mkdir -p dist
+          
+          # Copy PoEM binaries to dist directory
+          echo "=== Copying PoEM binaries to dist/ ==="
+          find . -type f \( -name "poemd.exe" -o -name "poem-cli.exe" -o -name "poem-tx.exe" -o -name "*.dll" \) -exec cp -v {} dist/ \;
+          
+          # Verify what's in dist/
+          echo "=== Contents of dist/ after copying ==="
+          find dist -type f | sort
+          
+          # Create file list for zip
+          echo "=== Creating file list for packaging ==="
           cd dist
+          find . -type f > files_to_pack.txt
           
-          # Debug - show all files in dist directory
-          echo "All files in dist directory:"
-          find . -type f | sort
-          
-          # Fix: More explicitly identify our binaries with better patterns
-          echo "Creating list of files to include"
-          touch files_to_pack.txt
-          
-          # Add the main PoEM binaries
-          find . -type f -name "poemd.exe" -o -name "poem-cli.exe" -o -name "poem-tx.exe" | tee -a files_to_pack.txt
-          
-          # Add all DLLs because they're needed to run the executables
-          find . -type f -name "*.dll" | tee -a files_to_pack.txt
-          
-          # Show what's being packaged
-          echo "Files to include in package:"
+          echo "=== Files to be included in package ==="
           cat files_to_pack.txt
           
-          # If the binaries aren't found, include everything except dogecoin binaries
-          if ! grep -q "poem" files_to_pack.txt; then
-            echo "WARNING: No PoEM files found, falling back to including everything except dogecoin binaries"
-            find . -type f | grep -v "dogecoin" > files_to_pack.txt
-            cat files_to_pack.txt
-          fi
-          
           # Create the zip file
-          # Use 7z directly with file list
-          7z a ../brrrfren-windows-x64.zip @files_to_pack.txt || echo "WARNING: 7z failed"
+          echo "=== Creating package ==="
+          7z a ../brrrfren-windows-x64.zip @files_to_pack.txt
           cd ..
           ASSET_NAME="brrrfren-windows-x64.zip"
         fi

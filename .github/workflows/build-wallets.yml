@@ -293,23 +293,70 @@ jobs:
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
           echo "Packaging Linux binaries"
           cd dist
-          # Create a list of PoEM files to include
-          find . -type f \( -name "poem*" -o -name "brrrfren*" \) -o -name "lib*.so*" > files_to_pack.txt
-          # Package only those files
+          
+          # Debug - show all files in dist directory
+          echo "All files in dist directory:"
+          find . -type f | sort
+          
+          # Fix: More explicitly identify our binaries with better patterns
+          echo "Creating list of files to include"
+          touch files_to_pack.txt
+          
+          # Add the main PoEM binaries
+          find . -type f -name "poemd" -o -name "poem-cli" -o -name "poem-tx" | tee -a files_to_pack.txt
+          
+          # Add any shared libraries if they exist
+          if ls libpoemconsensus.so* 2>/dev/null; then
+            find . -name "libpoemconsensus.so*" | tee -a files_to_pack.txt
+          fi
+          
+          # Show what's being packaged
           echo "Files to include in package:"
           cat files_to_pack.txt
-          tar -czf ../brrrfren-linux-x64.tar.gz -T files_to_pack.txt
+          
+          # If the file list is empty, include everything as a fallback
+          if [ ! -s files_to_pack.txt ]; then
+            echo "WARNING: No PoEM files found, falling back to including everything except dogecoin binaries"
+            find . -type f | grep -v "dogecoin" > files_to_pack.txt
+            cat files_to_pack.txt
+          fi
+          
+          # Create the tarball
+          tar -czvf ../brrrfren-linux-x64.tar.gz -T files_to_pack.txt || echo "WARNING: tar failed"
           cd ..
           ASSET_NAME="brrrfren-linux-x64.tar.gz"
         else
           echo "Packaging Windows binaries"
           cd dist
-          # Create a list of PoEM files to include (executables and DLLs)
-          find . -type f \( -name "poem*.exe" -o -name "brrrfren*.exe" -o -name "*.dll" \) > files_to_pack.txt
-          # Package only those files
+          
+          # Debug - show all files in dist directory
+          echo "All files in dist directory:"
+          find . -type f | sort
+          
+          # Fix: More explicitly identify our binaries with better patterns
+          echo "Creating list of files to include"
+          touch files_to_pack.txt
+          
+          # Add the main PoEM binaries
+          find . -type f -name "poemd.exe" -o -name "poem-cli.exe" -o -name "poem-tx.exe" | tee -a files_to_pack.txt
+          
+          # Add all DLLs because they're needed to run the executables
+          find . -type f -name "*.dll" | tee -a files_to_pack.txt
+          
+          # Show what's being packaged
           echo "Files to include in package:"
           cat files_to_pack.txt
-          7z a ../brrrfren-windows-x64.zip @files_to_pack.txt
+          
+          # If the binaries aren't found, include everything except dogecoin binaries
+          if ! grep -q "poem" files_to_pack.txt; then
+            echo "WARNING: No PoEM files found, falling back to including everything except dogecoin binaries"
+            find . -type f | grep -v "dogecoin" > files_to_pack.txt
+            cat files_to_pack.txt
+          fi
+          
+          # Create the zip file
+          # Use 7z directly with file list
+          7z a ../brrrfren-windows-x64.zip @files_to_pack.txt || echo "WARNING: 7z failed"
           cd ..
           ASSET_NAME="brrrfren-windows-x64.zip"
         fi

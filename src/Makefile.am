@@ -390,91 +390,68 @@ libdogecoin_cli_a_SOURCES = \
 nodist_libdogecoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# bitcoind binary #
-dogecoind_SOURCES = bitcoind.cpp
-dogecoind_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-dogecoind_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-dogecoind_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-
-# poemd binary (PoEM daemon) #
-poemd_SOURCES = $(dogecoind_SOURCES)
-poemd_CPPFLAGS = $(dogecoind_CPPFLAGS) -D'BITCOIN_DAEMON_NAME=\"poemd\"'
-poemd_CXXFLAGS = $(dogecoind_CXXFLAGS)
-poemd_LDFLAGS = $(dogecoind_LDFLAGS)
-poemd_LDADD = $(dogecoind_LDADD)
+# poemd binary #
+poemd_SOURCES = bitcoind.cpp
+poemd_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) -D'BITCOIN_DAEMON_NAME="poemd"'
+poemd_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+poemd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-dogecoind_SOURCES += bitcoind-res.rc
+poemd_SOURCES += bitcoind-res.rc
 endif
 
-dogecoind_LDADD = \
-  $(LIBBRRRCOIN_SERVER) \
-  $(LIBBRRRCOIN_COMMON) \
+poemd_LDADD = \
+  $(LIBBITCOIN_SERVER) \
+  $(LIBBITCOIN_CLI) \
+  $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
-  $(LIBBRRRCOIN_UTIL) \
-  $(LIBBRRRCOIN_WALLET) \
-  $(LIBBRRRCOIN_ZMQ) \
-  $(LIBBRRRCOIN_CONSENSUS) \
-  $(LIBBRRRCOIN_CRYPTO) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_WALLET) \
+  $(LIBBITCOIN_ZMQ) \
+  $(LIBBITCOIN_CONSENSUS) \
+  $(LIBBITCOIN_CRYPTO) \
   $(LIBLEVELDB) \
+  $(LIBLEVELDB_SSE42) \
   $(LIBMEMENV) \
+  $(LIBSECP256K1) \
+  $(LIBUNIVALUE) \
   $(LIBSECP256K1)
 
-dogecoind_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
-
-# bitcoin-cli binary #
-dogecoin_cli_SOURCES = bitcoin-cli.cpp
-dogecoin_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-dogecoin_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-dogecoin_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+poemd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(ZMQ_LIBS)
 
 # poem-cli binary (PoEM CLI) #
-poem_cli_SOURCES = $(dogecoin_cli_SOURCES)
-poem_cli_CPPFLAGS = $(dogecoin_cli_CPPFLAGS)
-poem_cli_CXXFLAGS = $(dogecoin_cli_CXXFLAGS)
-poem_cli_LDFLAGS = $(dogecoin_cli_LDFLAGS)
-poem_cli_LDADD = $(dogecoin_cli_LDADD)
-
+poem_cli_SOURCES = bitcoin-cli.cpp
+poem_cli_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+poem_cli_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+poem_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+poem_cli_LDADD = $(LIBBITCOIN_CLI) $(LIBBITCOIN_UTIL) $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
 if TARGET_WINDOWS
-dogecoin_cli_SOURCES += bitcoin-cli-res.rc
+poem_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-dogecoin_cli_LDADD = \
-  $(LIBBRRRCOIN_CLI) \
-  $(LIBUNIVALUE) \
-  $(LIBBRRRCOIN_UTIL) \
-  $(LIBBRRRCOIN_CRYPTO)
 
-dogecoin_cli_LDADD += $(BOOST_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(EVENT_LIBS)
-#
-
-# bitcoin-tx binary #
-dogecoin_tx_SOURCES = bitcoin-tx.cpp
-dogecoin_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
-dogecoin_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-dogecoin_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 # poem-tx binary (PoEM transaction tool) #
-poem_tx_SOURCES = $(dogecoin_tx_SOURCES)
-poem_tx_CPPFLAGS = $(dogecoin_tx_CPPFLAGS)
-poem_tx_CXXFLAGS = $(dogecoin_tx_CXXFLAGS)
-poem_tx_LDFLAGS = $(dogecoin_tx_LDFLAGS)
-poem_tx_LDADD = $(dogecoin_tx_LDADD)
+poem_tx_SOURCES = bitcoin-tx.cpp
+poem_tx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+poem_tx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+poem_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-dogecoin_tx_SOURCES += bitcoin-tx-res.rc
+poem_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
-dogecoin_tx_LDADD = \
+poem_tx_LDADD = \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBBITCOIN_UTIL) \
   $(LIBUNIVALUE) \
-  $(LIBBRRRCOIN_COMMON) \
-  $(LIBBRRRCOIN_UTIL) \
-  $(LIBBRRRCOIN_CONSENSUS) \
-  $(LIBBRRRCOIN_CRYPTO) \
+  $(LIBBITCOIN_CONSENSUS) \
+  $(LIBBITCOIN_CRYPTO) \
   $(LIBSECP256K1)
 
-dogecoin_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
-#
+poem_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+
+
 
 # bitcoinconsensus library #
 if BUILD_BITCOIN_LIBS

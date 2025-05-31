@@ -329,11 +329,28 @@ jobs:
           echo "=== Files to be included in package ==="
           cat files_to_pack.txt
           
-          # Create the tarball
-          echo "=== Creating package ==="
-          tar -czvf ../brrrfren-linux-x64.tar.gz --files-from=files_to_pack.txt
+          # Create versioned package directory
+          echo "=== Creating versioned package ==="
+          VERSION=$(git describe --tags --abbrev=0 || echo "unknown")
+          PKG_DIR="brrrfren-$VERSION"
+          mkdir -p "../package/$PKG_DIR"
+          
+          # Copy files to versioned directory
+          echo "=== Copying files to $PKG_DIR/ ==="
+          cp -v * "../package/$PKG_DIR/"
           cd ..
+          
+          # Create the tarball
+          echo "=== Creating archive ==="
+          tar -czvf "brrrfren-linux-x64.tar.gz" -C package "$PKG_DIR"
+          
+          # Clean up
+          rm -rf package
           ASSET_NAME="brrrfren-linux-x64.tar.gz"
+          
+          # Show final archive contents
+          echo "=== Archive contents ==="
+          tar -tzf "$ASSET_NAME" | sort
         else
           echo "=== Packaging Windows binaries ==="
           

@@ -318,7 +318,7 @@ jobs:
     # Upload artifacts for branch pushes (for testing)
     - name: Upload build artifacts
       if: github.ref != 'refs/heads/poem-rename-cleanup'  # Adjust if needed
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.package.outputs.asset_name }}
         path: |

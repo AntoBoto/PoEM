@@ -270,10 +270,18 @@ jobs:
         cd dist
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
           # Linux binaries
-          rm -f dogecoind dogecoin-cli dogecoin-tx
+          echo "Removing Dogecoin binaries on Linux:"
+          rm -fv dogecoind dogecoin-cli dogecoin-tx dogecoin-qt
+          # Show what remains
+          echo "Remaining binaries:"
+          find . -type f -executable | sort
         else
           # Windows binaries
-          rm -f dogecoind.exe dogecoin-cli.exe dogecoin-tx.exe
+          echo "Removing Dogecoin binaries on Windows:"
+          rm -fv dogecoind.exe dogecoin-cli.exe dogecoin-tx.exe dogecoin-qt.exe
+          # Show what remains
+          echo "Remaining binaries:"
+          find . -name "*.exe" | sort
         fi
         echo "Filtered out Dogecoin binaries"
         ls -la
@@ -283,13 +291,25 @@ jobs:
       id: package
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
+          echo "Packaging Linux binaries"
           cd dist
-          tar -czf ../brrrfren-linux-x64.tar.gz *
+          # Create a list of PoEM files to include
+          find . -type f \( -name "poem*" -o -name "brrrfren*" \) -o -name "lib*.so*" > files_to_pack.txt
+          # Package only those files
+          echo "Files to include in package:"
+          cat files_to_pack.txt
+          tar -czf ../brrrfren-linux-x64.tar.gz -T files_to_pack.txt
           cd ..
           ASSET_NAME="brrrfren-linux-x64.tar.gz"
         else
+          echo "Packaging Windows binaries"
           cd dist
-          7z a ../brrrfren-windows-x64.zip *
+          # Create a list of PoEM files to include (executables and DLLs)
+          find . -type f \( -name "poem*.exe" -o -name "brrrfren*.exe" -o -name "*.dll" \) > files_to_pack.txt
+          # Package only those files
+          echo "Files to include in package:"
+          cat files_to_pack.txt
+          7z a ../brrrfren-windows-x64.zip @files_to_pack.txt
           cd ..
           ASSET_NAME="brrrfren-windows-x64.zip"
         fi

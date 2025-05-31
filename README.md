@@ -1,8 +1,10 @@
 <h1 align="center">
 <img src="https://raw.githubusercontent.com/dogecoin/dogecoin/master/share/pixmaps/dogecoin256.svg" alt="BrrrFren" width="256"/>
 <br/><br/>
-BrrrFren Core [BRRR, Ð]  
+BrrrFren Core [BRRR, Ð]
 </h1>
+
+> **Note**: This is a test commit to verify the CI/CD workflow with the new branch structure.
 
 **IMPORTANT: Starting August 2024, the `master` branch has become the primary
 integration branch and has become unstable. Please check out a tagged version

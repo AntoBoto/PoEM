@@ -315,6 +315,18 @@ jobs:
         echo "checksum_path=$ASSET.sha256" >> $GITHUB_OUTPUT
       shell: bash
 
+    # Upload artifacts for branch pushes (for testing)
+    - name: Upload build artifacts
+      if: github.ref != 'refs/heads/poem-rename-cleanup'  # Adjust if needed
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ steps.package.outputs.asset_name }}
+        path: |
+          ${{ steps.package.outputs.asset_name }}
+          ${{ steps.checksum.outputs.checksum_path }}
+        retention-days: 5
+
+    # Upload to GitHub Releases for tags
     - name: Upload release assets
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1

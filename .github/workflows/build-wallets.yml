@@ -292,37 +292,37 @@ jobs:
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
           echo "Packaging Linux binaries"
+          
+          # Debug - show directory structure to find where binaries are
+          echo "=== Current directory structure ==="
+          find . -type d | sort
+          
+          # Look for PoEM binaries in common locations
+          echo "=== Looking for PoEM binaries ==="
+          find . -type f \( -name "poemd" -o -name "poem-cli" -o -name "poem-tx" \) -o -name "libpoem*.so*" | sort
+          
+          # Create dist directory if it doesn't exist
+          mkdir -p dist
+          
+          # Copy PoEM binaries to dist directory
+          echo "=== Copying PoEM binaries to dist/ ==="
+          find . -type f \( -name "poemd" -o -name "poem-cli" -o -name "poem-tx" -o -name "libpoem*.so*" \) -exec cp -v {} dist/ \;
+          
+          # Verify what's in dist/
+          echo "=== Contents of dist/ after copying ==="
+          find dist -type f | sort
+          
+          # Create file list for tar
+          echo "=== Creating file list for packaging ==="
           cd dist
+          find . -type f > files_to_pack.txt
           
-          # Debug - show all files in dist directory
-          echo "All files in dist directory:"
-          find . -type f | sort
-          
-          # Fix: More explicitly identify our binaries with better patterns
-          echo "Creating list of files to include"
-          touch files_to_pack.txt
-          
-          # Add the main PoEM binaries
-          find . -type f -name "poemd" -o -name "poem-cli" -o -name "poem-tx" | tee -a files_to_pack.txt
-          
-          # Add any shared libraries if they exist
-          if ls libpoemconsensus.so* 2>/dev/null; then
-            find . -name "libpoemconsensus.so*" | tee -a files_to_pack.txt
-          fi
-          
-          # Show what's being packaged
-          echo "Files to include in package:"
+          echo "=== Files to be included in package ==="
           cat files_to_pack.txt
           
-          # If the file list is empty, include everything as a fallback
-          if [ ! -s files_to_pack.txt ]; then
-            echo "WARNING: No PoEM files found, falling back to including everything except dogecoin binaries"
-            find . -type f | grep -v "dogecoin" > files_to_pack.txt
-            cat files_to_pack.txt
-          fi
-          
           # Create the tarball
-          tar -czvf ../brrrfren-linux-x64.tar.gz -T files_to_pack.txt || echo "WARNING: tar failed"
+          echo "=== Creating package ==="
+          tar -czvf ../brrrfren-linux-x64.tar.gz --files-from=files_to_pack.txt
           cd ..
           ASSET_NAME="brrrfren-linux-x64.tar.gz"
         else

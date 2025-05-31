@@ -1,10 +1,8 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/dogecoin/dogecoin/master/share/pixmaps/dogecoin256.svg" alt="BrrrFren" width="256"/>
+<img src="https://raw.githubusercontent.com/dogecoin/dogecoin/master/share/pixmaps/dogecoin256.svg" alt="PoEM (BrrrFren)" width="256"/>
 <br/><br/>
-BrrrFren Core [BRRR, Ð]
+PoEM Core [BRRR, Ð]
 </h1>
-
-> **Note**: This is a test commit to verify the CI/CD workflow with the new branch structure.
 
 **IMPORTANT: Starting August 2024, the `master` branch has become the primary
 integration branch and has become unstable. Please check out a tagged version
@@ -19,13 +17,13 @@ refer to the [fee recommendation](doc/fee-recommendation.md).
 
 ## Usage 💻
 
-To start your journey with BrrrFren Core, see the [installation guide](INSTALL.md) and the [getting started](doc/getting-started.md) tutorial.
+To start your journey with PoEM Core, see the [installation guide](INSTALL.md) and the [getting started](doc/getting-started.md) tutorial.
 
-The JSON-RPC API provided by BrrrFren Core is self-documenting and can be browsed with `dogecoin-cli help`, while detailed information for each command can be viewed with `dogecoin-cli help <command>`.
+The JSON-RPC API provided by PoEM Core is self-documenting and can be browsed with `poem-cli help`, while detailed information for each command can be viewed with `poem-cli help <command>`.
 
 ### Such ports
 
-BrrrFren Core by default uses port `22556` for peer-to-peer communication that
+PoEM Core by default uses port `22556` for peer-to-peer communication that
 is needed to synchronize the "mainnet" blockchain and stay informed of new
 transactions and blocks. Additionally, a JSONRPC port can be opened, which
 defaults to port `22555` for mainnet nodes. It is strongly recommended to not
@@ -38,9 +36,11 @@ expose RPC ports to the public internet.
 
 ## Ongoing development - Moon plan 🌒
 
-BrrrFren Core is an open source and community driven software. The development
+PoEM Core is an open source and community driven software. The development
 process is open and publicly visible; anyone can see, discuss and work on the
 software.
+
+For developers contributing to PoEM Core, please see the [development guide](DEVELOPMENT.md) for important information about the build system and release process.
 
 Main development resources:
 

@@ -307,34 +307,35 @@ jobs:
             # Create desktop file
             mkdir -p package/linux/share/applications
             cat > package/linux/poem-qt.desktop << 'DESKTOP_EOF'
-[Desktop Entry]
-Type=Application
-Name=PoEM Wallet
-GenericName=PoEM Wallet
-Comment=PoEM Wallet - The People's Meme
-Exec=poem-qt
-Icon=poem-qt
-Terminal=false
-Categories=Network;Finance;
-DESKTOP_EOF
+            [Desktop Entry]
+            Type=Application
+            Name=PoEM Wallet
+            GenericName=PoEM Wallet
+            Comment=PoEM Wallet - The People's Meme
+            Exec=poem-qt
+            Icon=poem-qt
+            Terminal=false
+            Categories=Network;Finance;
+            DESKTOP_EOF
             
             # Create README
-            README_CONTENT="PoEM Wallet (Linux)
-==================
+            cat > package/linux/README.txt << 'README_EOF'
+            PoEM Wallet (Linux)
+            ==================
 
-To start the PoEM Wallet GUI, run:
+            To start the PoEM Wallet GUI, run:
 
-    ./poem-qt
+                ./poem-qt
 
-Or from the applications menu, search for \"PoEM Wallet\".
+            Or from the applications menu, search for "PoEM Wallet".
 
-Command line tools:
-- ./poemd: The PoEM daemon
-- ./poem-cli: Command-line interface for PoEM
-- ./poem-tx: Transaction tool
+            Command line tools:
+            - ./poemd: The PoEM daemon
+            - ./poem-cli: Command-line interface for PoEM
+            - ./poem-tx: Transaction tool
 
-For more information, visit: https://github.com/AntoBoto/PoEM"
-            echo "$README_CONTENT" > package/linux/README.txt
+            For more information, visit: https://github.com/AntoBoto/PoEM
+            README_EOF
           else
             echo "⚠️  GUI wallet not found in Linux build"
             ls -la dist/linux/
@@ -372,24 +373,26 @@ For more information, visit: https://github.com/AntoBoto/PoEM"
             echo "✅ Including GUI wallet in Windows package"
             
             # Create launcher batch file
-            BATCH_CONTENT='@echo off
-title PoEM Wallet
-start "" "%~dp0poem-qt.exe"'
-            echo "$BATCH_CONTENT" > package/windows/Start-PoEM-Wallet.bat
+            cat > package/windows/Start-PoEM-Wallet.bat << 'BATCH_EOF'
+            @echo off
+            title PoEM Wallet
+            start "" "%~dp0poem-qt.exe"
+            BATCH_EOF
             
             # Create README
-            README_WIN="PoEM Wallet (Windows)
-====================
+            cat > package/windows/README.txt << 'README_EOF'
+            PoEM Wallet (Windows)
+            ====================
 
-To start the PoEM Wallet, double-click on 'Start-PoEM-Wallet.bat' or 'poem-qt.exe'.
+            To start the PoEM Wallet, double-click on 'Start-PoEM-Wallet.bat' or 'poem-qt.exe'.
 
-Command line tools:
-- poemd.exe: The PoEM daemon
-- poem-cli.exe: Command-line interface for PoEM
-- poem-tx.exe: Transaction tool
+            Command line tools:
+            - poemd.exe: The PoEM daemon
+            - poem-cli.exe: Command-line interface for PoEM
+            - poem-tx.exe: Transaction tool
 
-For more information, visit: https://github.com/AntoBoto/PoEM"
-            echo "$README_WIN" > package/windows/README.txt
+            For more information, visit: https://github.com/AntoBoto/PoEM
+            README_EOF
           else
             echo "⚠️  GUI wallet not found in Windows build"
             ls -la dist/windows/

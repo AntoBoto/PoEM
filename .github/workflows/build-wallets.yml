@@ -64,12 +64,8 @@ jobs:
           mingw-w64-x86_64-miniupnpc
           mingw-w64-x86_64-qt5-base
           mingw-w64-x86_64-qt5-tools
-          mingw-w64-x86_64-qt5-network
-          mingw-w64-x86_64-qt5-base
-          mingw-w64-x86_64-qt5-tools
           mingw-w64-x86_64-protobuf
           mingw-w64-x86_64-qrencode
-          mingw-w64-x86_64-miniupnpc
 
     - name: Build BrrrFren (Linux)
       if: matrix.os == 'ubuntu-22.04'
@@ -167,11 +163,17 @@ jobs:
         # Define all required Qt modules
         QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5Network"
         
+        # List available Qt5 packages to verify what's installed
+        echo "=== Available Qt5 Packages ==="
+        pacman -Ss mingw-w64-x86_64-qt5 | grep -E "^mingw64/"
+        
         # Debug: Comprehensive Qt installation checks
         echo "=== Checking Qt installation ==="
         echo "Searching for Qt headers..."
         find /mingw64/include -name "QtCore" -type d 2>/dev/null || echo "QtCore directory not found"
-        find /mingw64/include -name "QLocalSocket" 2>/dev/null || echo "QLocalSocket not found"
+        find /mingw64/include -name "QtNetwork" -type d 2>/dev/null || echo "QtNetwork directory not found"
+        echo "Searching for specific Network headers..."
+        find /mingw64/include -name "QTcpSocket.h" -o -name "QLocalSocket.h" | head -5
         
         echo "=== Qt directories ==="
         find /mingw64 -name "Qt*" -type d -maxdepth 3 2>/dev/null | sort

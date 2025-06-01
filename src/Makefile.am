@@ -469,7 +469,7 @@ if GLIBC_BACK_COMPAT
 endif
 
 libdogecoinconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libdogecoinconsensus_la_LIBADD = $(LIBSECP256K1)
+libdogecoinconsensus_la_LIBADD = $(LIBBRRRCOIN_UTIL) $(LIBSECP256K1) $(BOOST_LIBS) $(CRYPTO_LIBS) $(PTHREAD_LIBS)
 libdogecoinconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
 libdogecoinconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 

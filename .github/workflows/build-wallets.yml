@@ -2,6 +2,8 @@ name: Build BrrrFren Wallets
 
 on:
   push:
+    branches:
+      - stable-build
     tags:
       - 'v*.*.*'
 

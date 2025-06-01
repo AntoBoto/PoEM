@@ -158,19 +158,50 @@ jobs:
         # Force configure to accept that boost_system is available
         export ax_cv_boost_system=yes
         
-        # Set Qt related environment variables
-        export QT5_PREFIX=/mingw64/lib/qt5
-        export PATH="$PATH:/mingw64/bin:/mingw64/lib/qt5/bin"
-        export PKG_CONFIG_PATH="/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig"
+        # Set pkg-config path to find Qt and other libraries
+        export PKG_CONFIG_PATH="/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig:$PKG_CONFIG_PATH"
+        export PATH="$PATH:/mingw64/bin"
         
-        # 🔍 Debug: Check if Qt is installed correctly
-        echo "Checking Qt installation:"
-        ls -la /mingw64/include/qt5/QtCore
+        # Debug: Comprehensive Qt installation checks
+        echo "=== Checking Qt installation ==="
+        echo "Searching for Qt headers..."
+        find /mingw64/include -name "QtCore" -type d 2>/dev/null || echo "QtCore directory not found"
+        find /mingw64/include -name "qobject.h" 2>/dev/null || echo "qobject.h not found"
+        
+        echo "=== Qt directories ==="
+        find /mingw64 -name "Qt*" -type d -maxdepth 3 2>/dev/null | sort
+        
+        echo "=== Qt pkg-config files ==="
+        find /mingw64 -name "*qt*.pc" -o -name "*Qt*.pc" | sort
+        
+        echo "=== Testing pkg-config ==="
         pkg-config --list-all | grep -i qt
+        echo "Qt5Core include paths from pkg-config:"
+        pkg-config --cflags Qt5Core || echo "pkg-config for Qt5Core failed"
         
-        # 🎯 FIX: Force C++17 + disable tests + add missing Windows libs + include Qt paths
-        export CXXFLAGS="-Og -std=c++17 -I/mingw64/include/qt5 -I/mingw64/include/qt5/QtCore -I/mingw64/include/qt5/QtWidgets -I/mingw64/include/qt5/QtGui"
-        export LDFLAGS="-lbcrypt -L/mingw64/lib -L/mingw64/lib/qt5"
+        # Create compatibility symlinks if Qt is installed in a different location
+        if [ ! -d "/mingw64/include/qt5" ] && [ -d "/mingw64/include/QtCore" ]; then
+            echo "Creating Qt5 compatibility symlinks..."
+            mkdir -p /mingw64/include/qt5
+            ln -sf /mingw64/include/Qt* /mingw64/include/qt5/
+        fi
+        
+        # Set CXXFLAGS using pkg-config if possible, otherwise fall back to common paths
+        export CXXFLAGS="-Og -std=c++17 $(pkg-config --cflags Qt5Core Qt5Widgets Qt5Gui 2>/dev/null || echo '')"
+        
+        # If pkg-config fails, fall back to common MSYS2 Qt paths
+        if [ -z "$CXXFLAGS" ] || ! echo "$CXXFLAGS" | grep -q "Qt"; then
+            echo "pkg-config failed for Qt, trying fallback paths..."
+            # Common MSYS2 Qt locations
+            if [ -d "/mingw64/include/QtCore" ]; then
+                export CXXFLAGS="-Og -std=c++17 -I/mingw64/include"
+            elif [ -d "/mingw64/include/qt5" ]; then
+                export CXXFLAGS="-Og -std=c++17 -I/mingw64/include/qt5"
+            fi
+        fi
+        
+        # Set LDFLAGS with required Windows libraries and Qt libraries
+        export LDFLAGS="-lbcrypt $(pkg-config --libs Qt5Core Qt5Widgets Qt5Gui 2>/dev/null || echo '-L/mingw64/lib')"
         
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
@@ -353,8 +384,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          ${{ env.ASSET_NAME }}
-          ${{ env.ASSET_NAME }}.sha256
+          brrrfren-${{ matrix.os == 'ubuntu-22.04' && 'linux' || 'windows' }}-x64.${{ matrix.os == 'ubuntu-22.04' && 'tar.gz' || 'zip' }}
+          brrrfren-${{ matrix.os == 'ubuntu-22.04' && 'linux' || 'windows' }}-x64.${{ matrix.os == 'ubuntu-22.04' && 'tar.gz' || 'zip' }}.sha256
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     

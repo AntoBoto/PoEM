@@ -71,6 +71,8 @@ jobs:
       if: matrix.os == 'ubuntu-22.04'
       run: |
         ./autogen.sh
+        # Add -fPIC to ensure all object files are compiled as position-independent code for shared libraries
+        export CXXFLAGS="-fPIC"
         ./configure --enable-static --with-pic --with-incompatible-bdb --with-qt=yes
         make -j$(nproc)
         

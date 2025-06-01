@@ -46,23 +46,25 @@ jobs:
           qtbase5-dev qttools5-dev-tools protobuf-compiler \
           libqrencode-dev libminiupnpc-dev libdb++-dev
 
-    - name: Install dependencies (Windows)
+    - name: Install MSYS2 packages for Windows build
       if: matrix.os == 'windows-latest'
       uses: msys2/setup-msys2@v2
       with:
+        msystem: mingw64
         update: true
-        install: >-
+        install: |
           git
           base-devel
           mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-autotools
-          mingw-w64-x86_64-pkg-config
           mingw-w64-x86_64-boost
-          mingw-w64-x86_64-boost-libs
+          mingw-w64-x86_64-openssl
           mingw-w64-x86_64-libevent
           mingw-w64-x86_64-db
-          mingw-w64-x86_64-openssl
+          mingw-w64-x86_64-zlib
+          mingw-w64-x86_64-miniupnpc
+          mingw-w64-x86_64-qt5-base
+          mingw-w64-x86_64-qt5-tools
+          mingw-w64-x86_64-qt5-network
           mingw-w64-x86_64-qt5-base
           mingw-w64-x86_64-qt5-tools
           mingw-w64-x86_64-protobuf
@@ -162,11 +164,14 @@ jobs:
         export PKG_CONFIG_PATH="/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig:$PKG_CONFIG_PATH"
         export PATH="$PATH:/mingw64/bin"
         
+        # Define all required Qt modules
+        QT_MODULES="Qt5Core Qt5Gui Qt5Widgets Qt5Network"
+        
         # Debug: Comprehensive Qt installation checks
         echo "=== Checking Qt installation ==="
         echo "Searching for Qt headers..."
         find /mingw64/include -name "QtCore" -type d 2>/dev/null || echo "QtCore directory not found"
-        find /mingw64/include -name "qobject.h" 2>/dev/null || echo "qobject.h not found"
+        find /mingw64/include -name "QLocalSocket" 2>/dev/null || echo "QLocalSocket not found"
         
         echo "=== Qt directories ==="
         find /mingw64 -name "Qt*" -type d -maxdepth 3 2>/dev/null | sort
@@ -176,18 +181,13 @@ jobs:
         
         echo "=== Testing pkg-config ==="
         pkg-config --list-all | grep -i qt
-        echo "Qt5Core include paths from pkg-config:"
-        pkg-config --cflags Qt5Core || echo "pkg-config for Qt5Core failed"
+        for module in $QT_MODULES; do
+            echo "$module include paths from pkg-config:"
+            pkg-config --cflags $module || echo "pkg-config for $module failed"
+        done
         
-        # Create compatibility symlinks if Qt is installed in a different location
-        if [ ! -d "/mingw64/include/qt5" ] && [ -d "/mingw64/include/QtCore" ]; then
-            echo "Creating Qt5 compatibility symlinks..."
-            mkdir -p /mingw64/include/qt5
-            ln -sf /mingw64/include/Qt* /mingw64/include/qt5/
-        fi
-        
-        # Set CXXFLAGS using pkg-config if possible, otherwise fall back to common paths
-        export CXXFLAGS="-Og -std=c++17 $(pkg-config --cflags Qt5Core Qt5Widgets Qt5Gui 2>/dev/null || echo '')"
+        # Set CXXFLAGS using pkg-config for all Qt modules
+        export CXXFLAGS="-Og -std=c++17 $(pkg-config --cflags $QT_MODULES 2>/dev/null || echo '')"
         
         # If pkg-config fails, fall back to common MSYS2 Qt paths
         if [ -z "$CXXFLAGS" ] || ! echo "$CXXFLAGS" | grep -q "Qt"; then
@@ -200,17 +200,17 @@ jobs:
             fi
         fi
         
-        # Set LDFLAGS with required Windows libraries and Qt libraries
-        export LDFLAGS="-lbcrypt $(pkg-config --libs Qt5Core Qt5Widgets Qt5Gui 2>/dev/null || echo '-L/mingw64/lib')"
+        # Set LDFLAGS with required Windows libraries and Qt libraries (shared)
+        export LDFLAGS="-lbcrypt $(pkg-config --libs $QT_MODULES 2>/dev/null || echo '-L/mingw64/lib')"
         
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
           LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
           CXXFLAGS="${CXXFLAGS}" \
-          --enable-static --with-pic \
           --with-incompatible-bdb --with-qt=yes \
           --disable-tests --disable-bench \
-          --with-boost="${BOOST_ROOT}"
+          --with-boost="${BOOST_ROOT}" \
+          --enable-upnp-default
           
         make -j1 V=1
         
@@ -278,13 +278,33 @@ jobs:
           MAIN_EXE="src/dogecoind.exe"
         elif [ -f src/brrrfrend.exe ]; then
           MAIN_EXE="src/brrrfrend.exe"
-        else
-          echo "Could not find main executable"
+        elif [ -f src/poemd.exe ]; then
+          MAIN_EXE="src/poemd.exe"
+        fi
+        
+        if [ -z "$MAIN_EXE" ]; then
+          echo "Error: No main executable found"
           exit 1
         fi
         
         # First, ensure we have the ldd-equivalent tool for Windows
         pacman -S --noconfirm mingw-w64-x86_64-ntldd-git || echo "ntldd already installed"
+        
+        # Copy Qt DLLs directly - needed for the GUI wallet
+        echo "Copying Qt DLLs..."
+        cp /mingw64/bin/Qt5Core.dll dist/
+        cp /mingw64/bin/Qt5Gui.dll dist/
+        cp /mingw64/bin/Qt5Widgets.dll dist/
+        cp /mingw64/bin/Qt5Network.dll dist/
+        
+        # Copy Qt platform plugins - required for GUI to work
+        echo "Copying Qt platform plugins..."
+        mkdir -p dist/platforms
+        cp /mingw64/share/qt5/plugins/platforms/qwindows.dll dist/platforms/
+        
+        # Also copy additional files required by Qt
+        cp -r /mingw64/share/qt5/plugins/styles dist/
+        cp -r /mingw64/share/qt5/plugins/imageformats dist/
         
         # Create a script to find and copy all dependencies
         cat > copy_deps.sh << 'EOF'

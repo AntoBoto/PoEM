@@ -130,6 +130,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: msys2 {0}
       run: |
+        {
         ./autogen.sh
         
         # Work around MSYS2 missing libboost_system-mt.a issue
@@ -307,6 +308,7 @@ jobs:
         # List all DLLs that were copied
         echo "=== DLLs included in package ==="
         ls -la dist/*.dll
+        } < /dev/null
 
     - name: Package binaries
       run: |

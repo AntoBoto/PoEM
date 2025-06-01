@@ -71,7 +71,7 @@ jobs:
       if: matrix.os == 'ubuntu-22.04'
       run: |
         ./autogen.sh
-        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=yes
+        ./configure --enable-static --with-pic --with-incompatible-bdb --with-qt=yes
         make -j$(nproc)
         
         # 🔍 Debug: Check what binaries were actually created
@@ -161,7 +161,7 @@ jobs:
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
           LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
           CXXFLAGS="${CXXFLAGS}" \
-          --enable-static --disable-shared --with-pic \
+          --enable-static --with-pic \
           --with-incompatible-bdb --with-qt=yes \
           --disable-tests --disable-bench \
           --with-boost="${BOOST_ROOT}"

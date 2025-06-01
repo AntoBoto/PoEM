@@ -291,6 +291,7 @@ libdogecoin_consensus_a_SOURCES = \
   arith_uint256.cpp \
   arith_uint256.h \
   chainparams.cpp \
+  chainparamsbase.cpp \
   consensus/merkle.cpp \
   consensus/merkle.h \
   consensus/params.cpp \

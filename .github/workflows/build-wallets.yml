@@ -166,7 +166,7 @@ jobs:
           --disable-tests --disable-bench \
           --with-boost="${BOOST_ROOT}"
           
-        make -j$(nproc)
+        make -j1 V=1
         
         # 🔍 Debug: Check what binaries were actually created
         echo "=== Checking what binaries exist in src/ ==="

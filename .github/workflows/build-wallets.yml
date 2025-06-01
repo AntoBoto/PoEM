@@ -83,19 +83,42 @@ jobs:
           strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
           mkdir -p dist
           cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
-          # Copy Qt GUI wallet if built
+          # Copy Qt GUI wallet if built - check for dogecoin-qt first (most likely)
           if [ -f src/qt/dogecoin-qt ]; then
             strip src/qt/dogecoin-qt
-            cp src/qt/dogecoin-qt dist/
+            cp src/qt/dogecoin-qt dist/poem-qt
+            echo "✅ Successfully copied and renamed GUI wallet from dogecoin-qt to poem-qt"
+          # Also check for poem-qt as a fallback
+          elif [ -f src/qt/poem-qt ]; then
+            strip src/qt/poem-qt
+            cp src/qt/poem-qt dist/
+            echo "✅ Successfully copied GUI wallet (poem-qt)"
+          else
+            echo "⚠️ No GUI wallet binary found in src/qt/"
+            ls -la src/qt/
           fi
         elif [ -f src/brrrfrend ]; then
           strip src/brrrfrend src/brrrfren-cli src/brrrfren-tx
           mkdir -p dist
           cp src/brrrfrend src/brrrfren-cli src/brrrfren-tx dist/
-          # Copy Qt GUI wallet if built
+          # Copy Qt GUI wallet if built - check for brrrfren-qt first
           if [ -f src/qt/brrrfren-qt ]; then
             strip src/qt/brrrfren-qt
-            cp src/qt/brrrfren-qt dist/
+            cp src/qt/brrrfren-qt dist/poem-qt
+            echo "✅ Successfully copied and renamed GUI wallet from brrrfren-qt to poem-qt"
+          # Also check for dogecoin-qt as a fallback
+          elif [ -f src/qt/dogecoin-qt ]; then
+            strip src/qt/dogecoin-qt
+            cp src/qt/dogecoin-qt dist/poem-qt
+            echo "✅ Successfully copied and renamed GUI wallet from dogecoin-qt to poem-qt"
+          # Finally check for poem-qt
+          elif [ -f src/qt/poem-qt ]; then
+            strip src/qt/poem-qt
+            cp src/qt/poem-qt dist/
+            echo "✅ Successfully copied GUI wallet (poem-qt)"
+          else
+            echo "⚠️ No GUI wallet binary found in src/qt/"
+            ls -la src/qt/
           fi
         else
           echo "ERROR: Could not find expected binaries!"
@@ -147,26 +170,52 @@ jobs:
         
         # 🔍 Debug: Check what binaries were actually created
         echo "=== Checking what binaries exist in src/ ==="
-        ls -la src/ | grep -E "\.exe$"
+        ls -la src/ | grep -i "exe$"
         
         # 🎯 Use actual binary names - same logic as Linux
         if [ -f src/dogecoind.exe ]; then
           strip src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe
           mkdir -p dist
           cp src/dogecoind.exe src/dogecoin-cli.exe src/dogecoin-tx.exe dist/
-          # Copy Qt GUI wallet if built
+          # Copy Qt GUI wallet if built - check for dogecoin-qt.exe first (most likely)
           if [ -f src/qt/dogecoin-qt.exe ]; then
             strip src/qt/dogecoin-qt.exe
-            cp src/qt/dogecoin-qt.exe dist/
+            cp src/qt/dogecoin-qt.exe dist/poem-qt.exe
+            echo "✅ Successfully copied and renamed Windows GUI wallet from dogecoin-qt.exe to poem-qt.exe"
+            # Also check for Qt plugin files in the build directory
+            echo "Checking for Qt plugins..."
+            ls -la src/qt/ | grep -i ".dll"
+          # Also check for poem-qt.exe as a fallback
+          elif [ -f src/qt/poem-qt.exe ]; then
+            strip src/qt/poem-qt.exe
+            cp src/qt/poem-qt.exe dist/
+            echo "✅ Successfully copied Windows GUI wallet (poem-qt.exe)"
+          else
+            echo "⚠️ No Windows GUI wallet binary found in src/qt/"
+            ls -la src/qt/
           fi
         elif [ -f src/brrrfrend.exe ]; then
           strip src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe
           mkdir -p dist
           cp src/brrrfrend.exe src/brrrfren-cli.exe src/brrrfren-tx.exe dist/
-          # Copy Qt GUI wallet if built
+          # Copy Qt GUI wallet if built - check all possible variants
           if [ -f src/qt/brrrfren-qt.exe ]; then
             strip src/qt/brrrfren-qt.exe
-            cp src/qt/brrrfren-qt.exe dist/
+            cp src/qt/brrrfren-qt.exe dist/poem-qt.exe
+            echo "✅ Successfully copied and renamed Windows GUI wallet from brrrfren-qt.exe to poem-qt.exe"
+          # Also check for dogecoin-qt.exe as a fallback
+          elif [ -f src/qt/dogecoin-qt.exe ]; then
+            strip src/qt/dogecoin-qt.exe
+            cp src/qt/dogecoin-qt.exe dist/poem-qt.exe
+            echo "✅ Successfully copied and renamed Windows GUI wallet from dogecoin-qt.exe to poem-qt.exe"
+          # Finally check for poem-qt.exe
+          elif [ -f src/qt/poem-qt.exe ]; then
+            strip src/qt/poem-qt.exe
+            cp src/qt/poem-qt.exe dist/
+            echo "✅ Successfully copied Windows GUI wallet (poem-qt.exe)"
+          else
+            echo "⚠️ No Windows GUI wallet binary found in src/qt/"
+            ls -la src/qt/
           fi
         else
           echo "ERROR: Could not find expected binaries!"

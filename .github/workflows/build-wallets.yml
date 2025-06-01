@@ -155,7 +155,7 @@ jobs:
         export ax_cv_boost_system=yes
         
         # 🎯 FIX: Force C++17 + disable tests + add missing Windows libs
-        export CXXFLAGS="-g -O2 -std=c++17"
+        export CXXFLAGS="-Og -std=c++17"
         export LDFLAGS="-lbcrypt"
         
         ./configure \

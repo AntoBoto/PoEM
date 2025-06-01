@@ -2,13 +2,8 @@ name: Build BrrrFren Wallets
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*.*.*'
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: write
@@ -25,17 +20,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Cache Linux dependencies
-      if: matrix.os == 'ubuntu-22.04'
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cache/apt
-          ~/.local/share/vcpkg
-        key: ${{ matrix.os }}-deps-${{ hashFiles('**/configure.ac') }}
-        restore-keys: |
-          ${{ matrix.os }}-deps-
 
     - name: Install dependencies (Linux)
       if: matrix.os == 'ubuntu-22.04'
@@ -72,414 +56,62 @@ jobs:
           mingw-w64-x86_64-qrencode
           mingw-w64-x86_64-miniupnpc
 
-    - name: Build BrrrFren (Linux)
+    - name: Build (Linux)
       if: matrix.os == 'ubuntu-22.04'
       run: |
         ./autogen.sh
-        ./configure --enable-static --disable-shared --with-pic --with-incompatible-bdb --with-qt=yes
+        ./configure --enable-static --with-pic --with-incompatible-bdb --with-qt=yes
         make -j$(nproc)
         
-        # 🔍 Debug: Check what binaries were actually created
-        echo "=== Checking what binaries exist in src/ ==="
-        ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|brrrfren)"
-        
-        # Create dist directory and copy binaries
-        mkdir -p ${{ github.workspace }}/dist/linux
-        
-        # Copy core binaries
-        if [ -f src/poemd ]; then
-          strip src/poemd src/poem-cli src/poem-tx
-          cp src/poemd src/poem-cli src/poem-tx ${{ github.workspace }}/dist/linux/
-          
-          # Copy GUI wallet if built
-          if [ -f src/qt/poem-qt ]; then
-            strip src/qt/poem-qt
-            cp src/qt/poem-qt ${{ github.workspace }}/dist/linux/
-            echo "✅ Successfully built and copied GUI wallet"
-          else
-            echo "⚠️  GUI wallet was not built. Check the build logs for Qt-related errors."
-            ls -la src/qt/
-          fi
-        else
-          echo "ERROR: Could not find PoEM binaries!"
-          ls -la src/
-          exit 1
+        mkdir -p dist
+        cp src/poemd src/poem-cli src/poem-tx dist/
+        if [ -f src/qt/poem-qt ]; then
+          cp src/qt/poem-qt dist/
         fi
 
-    - name: Build BrrrFren (Windows)
+    - name: Build (Windows)
       if: matrix.os == 'windows-latest'
       shell: msys2 {0}
       run: |
         ./autogen.sh
+        ./configure --enable-static --with-pic --with-incompatible-bdb --with-qt=yes
+        make -j1 V=1
         
-        # Work around MSYS2 missing libboost_system-mt.a issue
-        echo "Working around missing libboost_system-mt.a in MSYS2..."
-        if [ ! -f /mingw64/lib/libboost_system-mt.a ]; then
-          echo "Creating dummy libboost_system-mt.a (header-only in boost 1.88)"
-          ar crs /mingw64/lib/libboost_system-mt.a
+        mkdir -p dist
+        cp src/poemd.exe src/poem-cli.exe src/poem-tx.exe dist/
+        if [ -f src/qt/poem-qt.exe ]; then
+          cp src/qt/poem-qt.exe dist/
         fi
-        
-        # Set boost environment variables
-        export BOOST_ROOT=/mingw64
-        export BOOST_INCLUDEDIR=/mingw64/include
-        export BOOST_LIBRARYDIR=/mingw64/lib
-        export BOOST_SYSTEM_LIB=boost_system-mt
-        export BOOST_FILESYSTEM_LIB=boost_filesystem-mt
-        export BOOST_THREAD_LIB=boost_thread-mt
-        export BOOST_CHRONO_LIB=boost_chrono-mt
-        export BOOST_PROGRAM_OPTIONS_LIB=boost_program_options-mt
-        export BOOST_UNIT_TEST_FRAMEWORK_LIB=boost_unit_test_framework-mt
-        
-        # Force configure to accept that boost_system is available
-        export ax_cv_boost_system=yes
-        
-        # 🎯 FIX: Force C++17 + disable tests + add missing Windows libs
-        export CXXFLAGS="-g -O2 -std=c++17"
-        export LDFLAGS="-lbcrypt"
-        
-        ./configure \
-          CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
-          LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
-          CXXFLAGS="${CXXFLAGS}" \
-          --enable-static --disable-shared --with-pic \
-          --with-incompatible-bdb --with-qt=yes \
-          --disable-tests --disable-bench \
-          --with-boost="${BOOST_ROOT}"
-          
-        make -j$(nproc)
-        
-        # 🔍 Debug: Check what binaries were actually created
-        echo "=== Checking what binaries exist in src/ ==="
-        ls -la src/ | grep -E "\.exe$"
-        
-        # Create dist directory and copy Windows binaries
-        mkdir -p ${{ github.workspace }}/dist/windows
-        
-        # Check and copy core binaries
-        if [ -f src/poemd.exe ]; then
-          strip src/poemd.exe src/poem-cli.exe src/poem-tx.exe
-          cp src/poemd.exe src/poem-cli.exe src/poem-tx.exe ${{ github.workspace }}/dist/windows/
-          
-          # Copy GUI wallet if built
-          if [ -f src/qt/poem-qt.exe ]; then
-            strip src/qt/poem-qt.exe
-            cp src/qt/poem-qt.exe ${{ github.workspace }}/dist/windows/
-            echo "✅ Successfully built and copied Windows GUI wallet"
-            
-            # Verify the binary has all required dependencies
-            echo "=== Checking dependencies for poem-qt.exe ==="
-            ntldd -R src/qt/poem-qt.exe || echo "ntldd check completed"
-          else
-            echo "⚠️  Windows GUI wallet was not built. Check build logs for Qt-related errors."
-            ls -la src/qt/
-          fi
-        else
-          echo "ERROR: Could not find PoEM Windows binaries!"
-          ls -la src/
-          exit 1
-        fi
-        
-        # Copy ALL required DLLs for Windows using a more reliable approach
-        echo "Finding and copying all required DLLs..."
-        
-        # Get the main executable to work with
-        MAIN_EXE=""
-        if [ -f src/dogecoind.exe ]; then
-          MAIN_EXE="src/dogecoind.exe"
-        elif [ -f src/brrrfrend.exe ]; then
-          MAIN_EXE="src/brrrfrend.exe"
-        else
-          echo "Could not find main executable"
-          exit 1
-        fi
-        
-        # First, ensure we have the ldd-equivalent tool for Windows
-        pacman -S --noconfirm mingw-w64-x86_64-ntldd-git || echo "ntldd already installed"
-        
-        # Create a script to find and copy all dependencies
-        cat > copy_deps.sh << 'EOF'
-        #!/bin/bash
-        
-        # Function to copy a DLL and its dependencies recursively
-        function copy_dll_and_deps() {
-          local dll="$1"
-          local dest="$2"
-          local dll_basename=$(basename "$dll")
-          
-          # If we've already processed this DLL, skip it
-          if [[ -f "$dest/$dll_basename" ]]; then
-            return
-          fi
-          
-          echo "Copying $dll_basename"
-          cp "$dll" "$dest/"
-          
-          # Find dependencies
-          ntldd "$dll" | grep -i "mingw" | sed -n 's/.*=> \(.*\) .*/\1/p' | while read dep; do
-            if [[ -f "$dep" && "$dep" != "$dll" ]]; then
-              copy_dll_and_deps "$dep" "$dest"
-            fi
-          done
-        }
-        
-        # Main executable to process
-        MAIN_EXE="$1"
-        DEST_DIR="$2"
-        
-        # First copy MSYS2 core DLLs that might be missed
-        for lib in libwinpthread-1.dll libstdc++-6.dll libgcc_s_seh-1.dll; do
-          cp "/mingw64/bin/$lib" "$DEST_DIR/" 2>/dev/null || echo "Warning: Could not find $lib"
-        done
-        
-        # Handle Berkeley DB specifically as it might not be picked up
-        cp /mingw64/bin/libdb*.dll "$DEST_DIR/" 2>/dev/null || echo "Warning: Could not find Berkeley DB DLLs"
-        
-        # Copy all dependencies
-        copy_dll_and_deps "$MAIN_EXE" "$DEST_DIR"
-        
-        # Also copy the dependencies of the CLI, TX, and Qt tools
-        if [[ "$MAIN_EXE" == *"dogecoind.exe" ]]; then
-          copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-cli.exe}" "$DEST_DIR"
-          copy_dll_and_deps "${MAIN_EXE/dogecoind.exe/dogecoin-tx.exe}" "$DEST_DIR"
-          # Include Qt GUI wallet if it exists
-          if [[ -f "${MAIN_EXE/src\/dogecoind.exe/src/qt/dogecoin-qt.exe}" ]]; then
-            copy_dll_and_deps "${MAIN_EXE/src\/dogecoind.exe/src/qt/dogecoin-qt.exe}" "$DEST_DIR"
-          fi
-        elif [[ "$MAIN_EXE" == *"brrrfrend.exe" ]]; then
-          copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-cli.exe}" "$DEST_DIR"
-          copy_dll_and_deps "${MAIN_EXE/brrrfrend.exe/brrrfren-tx.exe}" "$DEST_DIR"
-          # Include Qt GUI wallet if it exists
-          if [[ -f "${MAIN_EXE/src\/brrrfrend.exe/src/qt/brrrfren-qt.exe}" ]]; then
-            copy_dll_and_deps "${MAIN_EXE/src\/brrrfrend.exe/src/qt/brrrfren-qt.exe}" "$DEST_DIR"
-          fi
-        fi
-        
-        echo "All dependencies copied to $DEST_DIR"
-        EOF
-        
-        chmod +x copy_deps.sh
-        ./copy_deps.sh "$MAIN_EXE" "dist"
-        
-        # List all DLLs that were copied
-        echo "=== DLLs included in package ==="
-        ls -la dist/*.dll
-
-    - name: Filter out Dogecoin binaries
-      run: |
-        # Remove Dogecoin binaries from dist directory
-        cd dist
-        if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
-          # Linux binaries
-          echo "Removing Dogecoin binaries on Linux:"
-          rm -fv dogecoind dogecoin-cli dogecoin-tx dogecoin-qt
-          # Show what remains
-          echo "Remaining binaries:"
-          find . -type f -executable | sort
-        else
-          # Windows binaries
-          echo "Removing Dogecoin binaries on Windows:"
-          rm -fv dogecoind.exe dogecoin-cli.exe dogecoin-tx.exe dogecoin-qt.exe
-          # Show what remains
-          echo "Remaining binaries:"
-          find . -name "*.exe" | sort
-        fi
-        echo "Filtered out Dogecoin binaries"
-        ls -la
-      shell: bash
 
     - name: Package binaries
-      id: package
       run: |
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
-          echo "Packaging Linux binaries"
-          mkdir -p package/linux
-          
-          # Copy all binaries including GUI wallet if it exists
-          cp -r dist/linux/* package/linux/
-          
-          # Check if GUI wallet was included
-          if [ -f package/linux/poem-qt ]; then
-            echo "✅ Including GUI wallet in Linux package"
-            
-            # Make GUI wallet executable
-            chmod +x package/linux/poem-qt
-            
-            # Create desktop file
-            mkdir -p package/linux/share/applications
-            cat > package/linux/poem-qt.desktop << 'DESKTOP_EOF'
-            [Desktop Entry]
-            Type=Application
-            Name=PoEM Wallet
-            GenericName=PoEM Wallet
-            Comment=PoEM Wallet - The People's Meme
-            Exec=poem-qt
-            Icon=poem-qt
-            Terminal=false
-            Categories=Network;Finance;
-            DESKTOP_EOF
-            
-            # Create README
-            cat > package/linux/README.txt << 'README_EOF'
-            PoEM Wallet (Linux)
-            ==================
-
-            To start the PoEM Wallet GUI, run:
-
-                ./poem-qt
-
-            Or from the applications menu, search for "PoEM Wallet".
-
-            Command line tools:
-            - ./poemd: The PoEM daemon
-            - ./poem-cli: Command-line interface for PoEM
-            - ./poem-tx: Transaction tool
-
-            For more information, visit: https://github.com/AntoBoto/PoEM
-            README_EOF
-          else
-            echo "⚠️  GUI wallet not found in Linux build"
-            ls -la dist/linux/
-          fi
-          
-          # Get version from binary or use timestamp
-          if [ -f package/linux/poemd ]; then
-            VERSION=$(./package/linux/poemd --version | head -n1 | awk '{print $NF}')
-            echo "Detected version: $VERSION"
-          else
-            echo "WARNING: Could not detect version from binary, using timestamp"
-            VERSION=$(date +%Y%m%d)
-          fi
-          
-          # Create tarball with version in filename
-          tar -czf "poem-linux-x86_64-${VERSION}.tar.gz" -C package/linux .
-          
-          # Generate checksum
-          sha256sum "poem-linux-x86_64-${VERSION}.tar.gz" > "poem-linux-x86_64-${VERSION}.tar.gz.sha256"
-          
-          # Set outputs for release
-          echo "asset_name=poem-linux-x86_64-${VERSION}.tar.gz" >> $GITHUB_OUTPUT
-          echo "asset_path=poem-linux-x86_64-${VERSION}.tar.gz" >> $GITHUB_OUTPUT
-          echo "asset_checksum=poem-linux-x86_64-${VERSION}.tar.gz.sha256" >> $GITHUB_OUTPUT
-          
-        elif [ "${{ matrix.os }}" = "windows-latest" ]; then
-          echo "Packaging Windows binaries"
-          mkdir -p package/windows
-          
-          # Copy all binaries including GUI wallet if it exists
-          cp -r dist/windows/* package/windows/
-          
-          # Check if GUI wallet was included
-          if [ -f package/windows/poem-qt.exe ]; then
-            echo "✅ Including GUI wallet in Windows package"
-            
-            # Create launcher batch file
-            cat > package/windows/Start-PoEM-Wallet.bat << 'BATCH_EOF'
-            @echo off
-            title PoEM Wallet
-            start "" "%~dp0poem-qt.exe"
-            BATCH_EOF
-            
-            # Create README
-            cat > package/windows/README.txt << 'README_EOF'
-            PoEM Wallet (Windows)
-            ====================
-
-            To start the PoEM Wallet, double-click on 'Start-PoEM-Wallet.bat' or 'poem-qt.exe'.
-
-            Command line tools:
-            - poemd.exe: The PoEM daemon
-            - poem-cli.exe: Command-line interface for PoEM
-            - poem-tx.exe: Transaction tool
-
-            For more information, visit: https://github.com/AntoBoto/PoEM
-            README_EOF
-          else
-            echo "⚠️  GUI wallet not found in Windows build"
-            ls -la dist/windows/
-          fi
-          
-          # Get version from binary or use timestamp
-          if [ -f package/windows/poemd.exe ]; then
-            VERSION=$(./package/windows/poemd.exe --version | head -n1 | awk '{print $NF}')
-            echo "Detected version: $VERSION"
-          else
-            echo "WARNING: Could not detect version from binary, using timestamp"
-            VERSION=$(date +%Y%m%d)
-          fi
-          
-          # Create zip archive with version in filename
-          7z a -tzip "poem-windows-x86_64-${VERSION}.zip" ".\\package\\windows\\*"
-          
-          # Generate checksum
-          certutil -hashfile "poem-windows-x86_64-${VERSION}.zip" SHA256 > "poem-windows-x86_64-${VERSION}.zip.sha256"
-          
-          # Set outputs for release
-          echo "asset_name=poem-windows-x86_64-${VERSION}.zip" >> $GITHUB_OUTPUT
-          echo "asset_path=poem-windows-x86_64-${VERSION}.zip" >> $GITHUB_OUTPUT
-          echo "asset_checksum=poem-windows-x86_64-${VERSION}.zip.sha256" >> $GITHUB_OUTPUT
+          cd dist
+          tar -czf ../poem-linux-x64.tar.gz *
+          cd ..
+          echo "ASSET_NAME=poem-linux-x64.tar.gz" >> $GITHUB_ENV
+        else
+          cd dist
+          7z a ../poem-windows-x64.zip *
+          cd ..
+          echo "ASSET_NAME=poem-windows-x64.zip" >> $GITHUB_ENV
         fi
       shell: bash
 
     - name: Generate checksums
-      id: checksum
       run: |
-        ASSET="${{ steps.package.outputs.asset_name }}"
-        
-        # Generate checksum
-        sha256sum "$ASSET" > "$ASSET.sha256"
-        
-        # Output checksum for verification
-        echo "Checksum for $ASSET:"
-        cat "$ASSET.sha256"
-        
-        # Set outputs for the upload step
-        echo "checksum_path=$ASSET.sha256" >> $GITHUB_OUTPUT
-      shell: bash
-
-    # Upload artifacts for branch pushes (for testing)
-    - name: Upload build artifacts
-      if: github.ref != 'refs/heads/poem-rename-cleanup'  # Adjust if needed
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ steps.package.outputs.asset_name }}
-        path: |
-          ${{ steps.package.outputs.asset_name }}
-          ${{ steps.checksum.outputs.checksum_path }}
-        retention-days: 5
-
-    # Upload to GitHub Releases for tags
-    - name: Upload release assets
-      if: startsWith(github.ref, 'refs/tags/')
-      run: |
-        # Debug output
-        echo "Tag detected, preparing release"
-        echo "Asset name: ${{ steps.package.outputs.asset_name }}"
-        echo "Looking for files:"
-        ls -la
-        
-        # Set file variables based on OS
         if [ "${{ matrix.os }}" = "ubuntu-22.04" ]; then
-          ASSET="brrrfren-linux-x64.tar.gz"
+          sha256sum poem-linux-x64.tar.gz > poem-linux-x64.tar.gz.sha256
         else
-          ASSET="brrrfren-windows-x64.zip"
+          sha256sum poem-windows-x64.zip > poem-windows-x64.zip.sha256
         fi
-        
-        echo "Using asset: $ASSET"
-        echo "Asset exists: $(ls -la $ASSET)"
-        echo "Checksum exists: $(ls -la $ASSET.sha256)"
       shell: bash
-      
-    - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
+
+    - name: Upload binaries to release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          brrrfren-linux-x64.tar.gz
-          brrrfren-linux-x64.tar.gz.sha256
-          brrrfren-windows-x64.zip
-          brrrfren-windows-x64.zip.sha256
-        draft: false
-        prerelease: false
+          ${{ env.ASSET_NAME }}
+          ${{ env.ASSET_NAME }}.sha256
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      id: upload-release

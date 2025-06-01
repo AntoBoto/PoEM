@@ -1,0 +1,112 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags (e.g., v1.0.0)
+
+jobs:
+  build:
+    name: Build and Package
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest]
+        include:
+          - os: ubuntu-22.04
+            artifact_name: poem-linux-amd64
+            build_script: |
+              ./autogen.sh
+              ./configure --without-gui --disable-wallet
+              make -j$(nproc)
+              mkdir -p dist/poem-v${{ github.ref_name#v }}
+              cp src/poemd src/poem-cli src/poem-tx dist/poem-v${{ github.ref_name#v }}/
+              tar -czf poem-v${{ github.ref_name#v }}-x86_64-linux-gnu.tar.gz -C dist/poem-v${{ github.ref_name#v }} .
+              sha256sum poem-v${{ github.ref_name#v }}-x86_64-linux-gnu.tar.gz > poem-v${{ github.ref_name#v }}-x86_64-linux-gnu.tar.gz.sha256
+          - os: windows-latest
+            artifact_name: poem-windows-amd64
+            build_script: |
+              choco install -y mingw make
+              ./autogen.sh
+              ./configure --without-gui --disable-wallet
+              make -j$(nproc)
+              mkdir -p dist/poem-v${{ github.ref_name#v }}
+              cp src/poemd.exe src/poem-cli.exe src/poem-tx.exe dist/poem-v${{ github.ref_name#v }}/
+              7z a -tzip poem-v${{ github.ref_name#v }}-win64.zip .\dist\poem-v${{ github.ref_name#v }}\*
+              certutil -hashfile poem-v${{ github.ref_name#v }}-win64.zip SHA256 > poem-v${{ github.ref_name#v }}-win64.zip.sha256
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up build environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          libtool \
+          autotools-dev \
+          automake \
+          pkg-config \
+          bsdmainutils \
+          python3 \
+          libssl-dev \
+          libevent-dev \
+          libboost-system-dev \
+          libboost-filesystem-dev \
+          libboost-chrono-dev \
+          libboost-test-dev \
+          libboost-thread-dev \
+          libminiupnpc-dev \
+          libzmq3-dev \
+          libqrencode-dev
+      if: matrix.os == 'ubuntu-22.04'
+
+    - name: Build
+      run: ${{ matrix.build_script }}
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: |
+          poem-v${{ github.ref_name#v }}-*
+          !poem-v${{ github.ref_name#v }}/  # Exclude the directory, we only want the archives
+
+  create-release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        name: PoEM ${{ github.ref_name }}
+        body: |
+          # PoEM ${{ github.ref_name }}
+
+          ## Binaries
+          - Linux x86_64: `poem-v${{ github.ref_name#v }}-x86_64-linux-gnu.tar.gz`
+          - Windows x64: `poem-v${{ github.ref_name#v }}-win64.zip`
+
+          ## Verifying Binaries
+          Checksums are provided for verifying the integrity of the downloaded files.
+        draft: false
+        prerelease: false
+        files: |
+          artifacts/poem-linux-amd64/poem-v${{ github.ref_name#v }}-x86_64-linux-gnu.tar.gz
+          artifacts/poem-linux-amd64/poem-v${{ github.ref_name#v }}-x86_64-linux-gnu.tar.gz.sha256
+          artifacts/poem-windows-amd64/poem-v${{ github.ref_name#v }}-win64.zip
+          artifacts/poem-windows-amd64/poem-v${{ github.ref_name#v }}-win64.zip.sha256

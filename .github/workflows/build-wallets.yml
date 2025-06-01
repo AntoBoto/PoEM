@@ -167,7 +167,7 @@ jobs:
           --disable-tests --disable-bench \
           --with-boost="${BOOST_ROOT}"
           
-        make -j1 V=1
+        make -j2 V=1
         
         # 🔍 Debug: Check what binaries were actually created
         echo "=== Checking what binaries exist in src/ ==="

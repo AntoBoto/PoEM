@@ -123,10 +123,21 @@ jobs:
           echo "=== Checking what binaries exist in src/ ==="
           ls -la src/ | grep -E "(dogecoind|dogecoin|brrrfren|poem)"
           
-          # Copy binaries with appropriate renaming
+          # Copy and rename binaries
           if [ -f src/dogecoind ]; then
+            # Strip debug symbols
             strip src/dogecoind src/dogecoin-cli src/dogecoin-tx
-            cp src/dogecoind src/dogecoin-cli src/dogecoin-tx dist/
+            
+            # Copy and rename binaries
+            cp src/dogecoind dist/poemd
+            cp src/dogecoin-cli dist/poem-cli
+            cp src/dogecoin-tx dist/poem-tx
+            
+            echo "✅ Successfully renamed binaries:"
+            echo "  - dogecoind → poemd"
+            echo "  - dogecoin-cli → poem-cli"
+            echo "  - dogecoin-tx → poem-tx"
+            
             # Copy Qt GUI wallet if built
             if [ -f src/qt/dogecoin-qt ]; then
               strip src/qt/dogecoin-qt
@@ -134,7 +145,7 @@ jobs:
               echo "✅ Successfully copied and renamed GUI wallet from dogecoin-qt to poem-qt"
             elif [ -f src/qt/poem-qt ]; then
               strip src/qt/poem-qt
-              cp src/qt/poem-qt dist/
+              cp src/qt/poem-qt dist/poem-qt
               echo "✅ Successfully copied GUI wallet (poem-qt)"
             else
               echo "⚠️ No GUI wallet binary found in src/qt/"

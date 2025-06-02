@@ -214,28 +214,6 @@ jobs:
         QT_LIBS="$(pkg-config --libs $QT_MODULES 2>/dev/null || echo '-L/mingw64/lib')"
         echo "Qt libraries that will be used by configure: $QT_LIBS"
         
-        # Create a patch for Makefile.qt.include to ensure dynamic linking for Qt GUI
-        echo "Creating patch to ensure dynamic linking for Qt GUI..."
-        # Create the patch file properly line by line
-        echo '--- src/Makefile.qt.include.orig	2023-01-01 00:00:00.000000000 +0000' > qt_dynamic_patch.diff
-        echo '+++ src/Makefile.qt.include	2023-01-01 00:00:00.000000000 +0000' >> qt_dynamic_patch.diff
-        echo '@@ -1,3 +1,7 @@' >> qt_dynamic_patch.diff
-        echo '+# IMPORTANT: This file has been patched by the GitHub workflow' >> qt_dynamic_patch.diff
-        echo '+# to ensure dynamic linking for Qt GUI components while keeping' >> qt_dynamic_patch.diff
-        echo '+# static linking for other components where appropriate.' >> qt_dynamic_patch.diff
-        echo '+#' >> qt_dynamic_patch.diff
-        echo ' # Copyright (c) 2013-2016 The Bitcoin Core developers' >> qt_dynamic_patch.diff
-        echo ' # Distributed under the MIT software license, see the accompanying' >> qt_dynamic_patch.diff
-        echo ' # file COPYING or http://www.opensource.org/licenses/mit-license.php.' >> qt_dynamic_patch.diff
-        echo '@@ -454,7 +458,7 @@' >> qt_dynamic_patch.diff
-        echo '   $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) \\' >> qt_dynamic_patch.diff
-        echo '   $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)' >> qt_dynamic_patch.diff
-        echo '-qt_dogecoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)' >> qt_dynamic_patch.diff
-        echo '+qt_dogecoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS)' >> qt_dynamic_patch.diff
-        echo ' qt_dogecoin_qt_LIBTOOLFLAGS = --tag CXX' >> qt_dynamic_patch.diff
-        echo ' ' >> qt_dynamic_patch.diff
-        echo ' #locale/foo.ts -> locale/foo.qm' >> qt_dynamic_patch.diff
-        
         # Run configure with appropriate options
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
@@ -247,8 +225,19 @@ jobs:
           --enable-upnp-default \
           --disable-static-libstdc++
         
-        # Apply the patch to ensure dynamic linking for Qt GUI
-        patch -p0 < qt_dynamic_patch.diff || echo "Patch application failed but continuing anyway"
+        # Directly modify src/Makefile.qt.include to remove LIBTOOL_APP_LDFLAGS from qt_dogecoin_qt_LDFLAGS
+        echo "Attempting to modify src/Makefile.qt.include to ensure dynamic Qt linking by removing \$(LIBTOOL_APP_LDFLAGS) from qt_dogecoin_qt_LDFLAGS..."
+        sed -i.bak "s|^\(qt_dogecoin_qt_LDFLAGS = .*\) \$(LIBTOOL_APP_LDFLAGS)|\1|" src/Makefile.qt.include
+        echo "Verifying the modification in src/Makefile.qt.include:"
+        echo "The qt_dogecoin_qt_LDFLAGS line should now be:"
+        grep "^qt_dogecoin_qt_LDFLAGS" src/Makefile.qt.include || echo "ERROR: qt_dogecoin_qt_LDFLAGS line not found after sed!"
+        echo "Displaying context from src/Makefile.qt.include (around qt_dogecoin_qt_LDFLAGS):"
+        grep -C 3 "^qt_dogecoin_qt_LDFLAGS" src/Makefile.qt.include || echo "INFO: Could not display context for qt_dogecoin_qt_LDFLAGS (perhaps not found)."
+        if [ -f src/Makefile.qt.include.bak ]; then
+          echo "Backup src/Makefile.qt.include.bak created by sed."
+        else
+          echo "WARNING: sed did not create a backup file. This might indicate the pattern wasn't found or sed had an issue."
+        fi
         
         # Check if the configure detected Qt properly
         echo "=== Checking configure output for Qt detection ==="

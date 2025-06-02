@@ -214,6 +214,7 @@ jobs:
         QT_LIBS="$(pkg-config --libs $QT_MODULES 2>/dev/null || echo '-L/mingw64/lib')"
         echo "Qt libraries that will be used by configure: $QT_LIBS"
         
+        # EXPLICITLY ensure we're using dynamic linking for Qt
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \
           LDFLAGS="-L${BOOST_LIBRARYDIR} ${LDFLAGS}" \
@@ -221,8 +222,33 @@ jobs:
           --with-incompatible-bdb --with-qt=yes \
           --disable-tests --disable-bench \
           --with-boost="${BOOST_ROOT}" \
-          --enable-upnp-default
-          
+          --enable-upnp-default \
+          --disable-static-libstdc++
+        
+        # Check if the configure detected Qt properly
+        echo "=== Checking configure output for Qt detection ==="
+        grep -i "qt" config.log | grep -i "yes\|no" || echo "No Qt detection info found"
+        
+        # Check for static linking flags in Makefile and remove them if present
+        echo "=== Checking Makefile for static flags ==="
+        if grep -q -- "-static" src/Makefile; then
+          echo "Found -static flag in Makefile, removing it..."
+          sed -i 's/-static //g' src/Makefile
+          sed -i 's/-static-libgcc //g' src/Makefile
+          sed -i 's/-static-libstdc++ //g' src/Makefile
+        fi
+        
+        # If there's a specific Makefile for Qt, check it too
+        if [ -f src/qt/Makefile ]; then
+          echo "=== Checking Qt Makefile for static flags ==="
+          if grep -q -- "-static" src/qt/Makefile; then
+            echo "Found -static flag in Qt Makefile, removing it..."
+            sed -i 's/-static //g' src/qt/Makefile
+            sed -i 's/-static-libgcc //g' src/qt/Makefile
+            sed -i 's/-static-libstdc++ //g' src/qt/Makefile
+          fi
+        fi
+        
         make -j1 V=1
         
         # 🔍 Debug: Check what binaries were actually created

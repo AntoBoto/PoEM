@@ -39,7 +39,7 @@ jobs:
             packages: python3
             
           - name: x86_64-win
-            os: windows-latest
+            os: ubuntu-22.04
             host: x86_64-w64-mingw32
             packages: python3 nsis g++-mingw-w64-x86-64 wine64 bc wine-binfmt
             postinstall: |

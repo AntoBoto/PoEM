@@ -1,0 +1,197 @@
+name: Build BrrrFren Wallets
+
+on:
+  push:
+    branches:
+      - stable-build
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-22.04
+    
+    env:
+      MAKEJOBS: "-j3"
+      CCACHE_SIZE: "100M"
+      CCACHE_TEMPDIR: /tmp/.ccache-temp
+      CCACHE_COMPRESS: "1"
+      WINEDEBUG: fixme-all
+      SDK_URL: https://depends.dogecoincore.org
+
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - x86_64-linux
+          - x86_64-win
+          - x86_64-macos
+        include:
+          - name: x86_64-linux
+            host: x86_64-unknown-linux-gnu
+            packages: python3
+            dep-opts: ""
+            config-opts: "--with-gui=qt5 --enable-glibc-back-compat LDFLAGS=-static-libstdc++"
+            goal: install
+            
+          - name: x86_64-win
+            host: x86_64-w64-mingw32
+            packages: python3 nsis g++-mingw-w64-x86-64 wine64 bc wine-binfmt
+            postinstall: |
+              update-alternatives --set x86_64-w64-mingw32-gcc  /usr/bin/x86_64-w64-mingw32-gcc-posix
+              update-alternatives --set x86_64-w64-mingw32-g++  /usr/bin/x86_64-w64-mingw32-g++-posix
+            dep-opts: ""
+            config-opts: "--enable-gui=qt5"
+            goal: install
+            
+          - name: x86_64-macos
+            host: x86_64-apple-darwin11
+            packages: cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools libtinfo5 xorriso
+            dep-opts: ""
+            config-opts: "--with-gui=qt5 --disable-tests"
+            goal: deploy
+            sdk: 10.11
+            sdk-shasum: "bec9d089ebf2e2dd59b1a811a38ec78ebd5da18cbbcd6ab39d1e59f64ac5033f"
+
+    steps:
+      - name: Install base packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libtool autotools-dev automake \
+               pkg-config bsdmainutils curl ca-certificates ccache rsync git \
+               procps bison python3
+          sudo apt-get install -y ${{ matrix.packages }}
+
+      - name: Post install
+        if: ${{ matrix.postinstall }}
+        run: ${{ matrix.postinstall }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SDK cache
+        if: ${{ matrix.sdk }}
+        uses: actions/cache@v4
+        with:
+          path: ./depends/sdk-sources
+          key: ${{ matrix.name }}-sdk-${{ hashFiles('.github/workflows/*.yml') }}
+
+      - name: Install SDK
+        if: ${{ matrix.sdk }}
+        env:
+          sdk-filename: MacOSX${{ matrix.sdk }}.sdk.tar.gz
+        run: |
+          mkdir -p ./depends/sdk-sources
+          mkdir -p ./depends/SDKs
+          echo "${{ matrix.sdk-shasum }}  depends/sdk-sources/${{ env.sdk-filename }}" | sha256sum -c || \
+          curl --location --fail $SDK_URL/${{ env.sdk-filename }} -o depends/sdk-sources/${{ env.sdk-filename }} &&\
+          echo "${{ matrix.sdk-shasum }}  depends/sdk-sources/${{ env.sdk-filename }}" | sha256sum -c
+          tar -C depends/SDKs -xf depends/sdk-sources/${{ env.sdk-filename }}
+
+      - name: Dependency cache
+        uses: actions/cache@v4
+        with:
+          path: ./depends/built
+          key: ${{ matrix.name }}-depends-${{ hashFiles('depends/packages/*') }}
+
+      - name: Build depends
+        run: |
+          make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep-opts }}
+
+      - name: CCache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ${{ matrix.name }}-ccache-${{ hashFiles('**/configure.ac') }}
+
+      - name: Build BrrrFren
+        run: |
+          depends/${{ matrix.host }}/native/bin/ccache --max-size=$CCACHE_SIZE || true
+          ./autogen.sh
+          ./configure --prefix=`pwd`/depends/${{ matrix.host }} ${{ matrix.config-opts }} || ( cat config.log && false)
+          make $MAKEJOBS ${{ matrix.goal }} || ( echo "Build failure. Verbose build follows." && make ${{ matrix.goal }} V=1 ; false )
+
+      - name: Rename binaries
+        run: |
+          # Create distribution directory
+          mkdir -p dist
+          
+          # Handle different platforms
+          if [ "${{ matrix.host }}" = "x86_64-w64-mingw32" ]; then
+            # Windows binaries
+            if [ -f src/dogecoind.exe ]; then
+              cp src/dogecoind.exe dist/poemd.exe
+              cp src/dogecoin-cli.exe dist/poem-cli.exe
+              cp src/dogecoin-tx.exe dist/poem-tx.exe
+              [ -f src/qt/dogecoin-qt.exe ] && cp src/qt/dogecoin-qt.exe dist/poem-qt.exe
+            fi
+          elif [ "${{ matrix.host }}" = "x86_64-apple-darwin11" ]; then
+            # macOS binaries
+            if [ -d dist/Dogecoin-Qt.app ]; then
+              mv dist/Dogecoin-Qt.app dist/Poem-Qt.app
+              # Update internal references if needed
+              if [ -f dist/Poem-Qt.app/Contents/MacOS/Dogecoin-Qt ]; then
+                mv dist/Poem-Qt.app/Contents/MacOS/Dogecoin-Qt dist/Poem-Qt.app/Contents/MacOS/Poem-Qt
+              fi
+            fi
+            [ -f src/dogecoind ] && cp src/dogecoind dist/poemd
+            [ -f src/dogecoin-cli ] && cp src/dogecoin-cli dist/poem-cli
+            [ -f src/dogecoin-tx ] && cp src/dogecoin-tx dist/poem-tx
+          else
+            # Linux binaries
+            if [ -f src/dogecoind ]; then
+              cp src/dogecoind dist/poemd
+              cp src/dogecoin-cli dist/poem-cli
+              cp src/dogecoin-tx dist/poem-tx
+              [ -f src/qt/dogecoin-qt ] && cp src/qt/dogecoin-qt dist/poem-qt
+            fi
+          fi
+          
+          # Strip binaries
+          if [ "${{ matrix.host }}" != "x86_64-apple-darwin11" ]; then
+            find dist -type f -executable -exec strip {} \; 2>/dev/null || true
+          fi
+
+      - name: Package binaries
+        run: |
+          cd dist
+          if [ "${{ matrix.name }}" = "x86_64-linux" ]; then
+            tar -czf ../brrrfren-linux-x64.tar.gz *
+            echo "ASSET_NAME=brrrfren-linux-x64.tar.gz" >> $GITHUB_ENV
+          elif [ "${{ matrix.name }}" = "x86_64-win" ]; then
+            # For Windows, we need to package as zip
+            zip -r ../brrrfren-windows-x64.zip *
+            echo "ASSET_NAME=brrrfren-windows-x64.zip" >> $GITHUB_ENV
+          elif [ "${{ matrix.name }}" = "x86_64-macos" ]; then
+            tar -czf ../brrrfren-macos-x64.tar.gz *
+            echo "ASSET_NAME=brrrfren-macos-x64.tar.gz" >> $GITHUB_ENV
+          fi
+          cd ..
+
+      - name: Generate checksums
+        run: |
+          sha256sum ${{ env.ASSET_NAME }} > ${{ env.ASSET_NAME }}.sha256
+
+      - name: Upload binaries to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ env.ASSET_NAME }}
+            ${{ env.ASSET_NAME }}.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+      - name: Upload build artifacts
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-binaries
+          path: |
+            ${{ env.ASSET_NAME }}
+            ${{ env.ASSET_NAME }}.sha256

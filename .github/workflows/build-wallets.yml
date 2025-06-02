@@ -191,7 +191,8 @@ jobs:
             pkg-config --cflags $module || echo "pkg-config for $module failed"
         done
         
-        # Set CXXFLAGS using pkg-config for all Qt modules
+        # Set CXXFLAGS only for Qt includes, not for linking
+        # This ensures Qt headers are found but libraries are only linked where needed
         export CXXFLAGS="-Og -std=c++17 $(pkg-config --cflags $QT_MODULES 2>/dev/null || echo '')"
         
         # If pkg-config fails, fall back to common MSYS2 Qt paths
@@ -205,8 +206,13 @@ jobs:
             fi
         fi
         
-        # Set LDFLAGS with required Windows libraries and Qt libraries (shared)
-        export LDFLAGS="-lbcrypt $(pkg-config --libs $QT_MODULES 2>/dev/null || echo '-L/mingw64/lib')"
+        # Set LDFLAGS with required Windows libraries ONLY
+        # Let configure handle Qt library linking internally
+        export LDFLAGS="-lbcrypt"
+        
+        # Store Qt library paths for debugging but don't add to global LDFLAGS
+        QT_LIBS="$(pkg-config --libs $QT_MODULES 2>/dev/null || echo '-L/mingw64/lib')"
+        echo "Qt libraries that will be used by configure: $QT_LIBS"
         
         ./configure \
           CPPFLAGS="-I${BOOST_INCLUDEDIR}" \

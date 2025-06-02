@@ -27,3 +27,30 @@ dist/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Autotools generated files
+Makefile.in
+aclocal.m4
+autom4te.cache/
+build-aux/
+configure
+config.log
+config.status
+stamp-h1
+src/config/bitcoin-config.h
+doc/man/Makefile.in
+src/Makefile.in
+
+# Build output logs
+build_output.log
+
+# Coverage data
+*.gcda
+*.gcno
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Private keys
+*.pem
